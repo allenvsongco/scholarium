@@ -1,0 +1,35 @@
+@import 'inc/reset.css';
+@import 'inc/placeholder.css';
+@import 'inc/classes.css';
+
+#login {
+     text-align: center;
+}
+
+#login li {
+     margin-bottom: 10px;
+}
+
+#login li:last-child {
+     height: 20px;
+     line-height: 20px;
+}
+
+#login input {
+     font-size: 18px;
+     padding: 10px;
+     width: 280px;
+}
+
+#login input[type=submit] {
+     background: var(--blue);
+     color: #fff;
+}
+
+#login input {
+     border:#ccc solid 1px;
+     -moz-border-radius:10px;
+     -webkit-border-radius:10px;
+     -khtml-border-radius:10px;
+     border-radius:10px;
+}

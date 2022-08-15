@@ -1,0 +1,23 @@
+/*		account			*/
+
+.account {
+    margin: 0 auto;
+    padding: 20px;
+    width: 600px;
+}
+
+.account div {
+    padding: 10px;
+}
+
+.account table {
+    margin: 0 auto;
+    padding: 20px;
+    width: 600px;
+}
+
+.account td {
+    padding: 5px;
+}
+
+/*		account			*/

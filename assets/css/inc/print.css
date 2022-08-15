@@ -1,0 +1,13 @@
+/*		print		*/
+
+body {
+    background: #fff;
+    margin: 0;
+}
+
+@page {
+    size: auto;
+    margin: 0mm 0mm 0mm 0mm;
+}
+
+/*		print		*/

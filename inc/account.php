@@ -38,6 +38,12 @@ function populateForm($arr, $new = 0) {
         'status',
     );
 
+    $arrTextarea= array(
+        'home_address',
+        'school_address',
+        'work_address',
+    );
+
     $arrAdmin = array(
         'id',
         'user_id',
@@ -51,6 +57,7 @@ function populateForm($arr, $new = 0) {
 
     foreach ($arr as $k => $v) {
         $$k = $v;
+        $readonly = ($k == 'id' ? READ_ONLY : '');
 
         switch ($k) {
             case 'modified_on':
@@ -65,15 +72,19 @@ function populateForm($arr, $new = 0) {
                 $in = '<input type="hidden" name="' . $k . '" value=0 /><input type="checkbox" name="' . $k . '" value=1 ' . ($v ? CHECKED : '') . ' />';
                 break;
 
+            case in_array($k, $arrTextarea, true):
+                $in = '<textarea name="' . $k . '" >' . $v . '</textarea>';
+                break;
+
             default:
-                $in = '<input type="text" name="' . $k . '" value="' . $v . '" ' . ($new ? 'required' : '') . ' />';
+                $in = '<input type="text" name="' . $k . '" value="' . $v . '" ' . ($new ? 'required' : '') . ' ' . $readonly . ' />';
                 break;
         }
 
         if ($k != 'password' && (USER_ISADMIN || (!in_array($k, $arrAdmin, true) && !USER_ISADMIN))) {
             $x .= '
                 <tr>
-                    <td><label>' . $k . '</label></td>
+                    <td><label>' . strtoupper(str_replace('_', ' ', $k)) . '</label></td>
                     <td>' . $in . '</td>
                 </tr>
             ';

@@ -20,4 +20,9 @@
     padding: 5px;
 }
 
+.account input[type=text],
+.account textarea {
+    width: 300px;
+}
+
 /*		account			*/

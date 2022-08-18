@@ -26,7 +26,7 @@ if( !empty($_POST) ) {
         $_SESSION['login']['name']     = "$first_name $last_name";
         $_SESSION['login']['is_admin'] = $is_admin;
 
-        header('Location:/' . $_SESSION['login_type'] );
+        header('Location:/');
         unset($_SESSION['login_type']);
         unset($_SESSION['bad_login']);
 

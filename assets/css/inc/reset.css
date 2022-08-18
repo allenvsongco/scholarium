@@ -137,7 +137,8 @@ hr {
 }
 
 input,
-button {
+button,
+textarea {
     border: 1px solid var(--input_border);
     padding: 5px;
 }

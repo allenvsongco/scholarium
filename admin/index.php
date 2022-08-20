@@ -12,6 +12,7 @@ if( !isset($_SESSION['login']) ) {
 }
 
 $root = '../';
+$base = basename(__DIR__);
 require($root . 'inc/setup.php');
 
 $title = ' | Admin';

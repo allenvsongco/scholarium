@@ -12,9 +12,9 @@ if( !empty($_POST) ) {
     $un = stripslashes(trim($_POST['un']));
     $pw = stripslashes(trim($_POST['pw']));
 
-    $con  = SQL('edxapp');
+    $con  = SQL('scholarium');
     $pass = sha1($un . ASIN . $pw);
-    $qry  = "SELECT * FROM learner_profile WHERE username='$un' AND password='$pass' AND status=1";
+    $qry  = "SELECT * FROM profile WHERE username='$un' AND password='$pass' AND status=1";
     $rs   = $con->query($qry);
     $r    = mysqli_fetch_array($rs);
 

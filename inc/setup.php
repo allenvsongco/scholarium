@@ -76,7 +76,7 @@ function test_input(&$dat) {
 }
 
 function trim_escape($dat) {
-	return mysqli_real_escape_string(SQL('edxapp'), stripslashes(trim($dat)));
+	return mysqli_real_escape_string(SQL('scholarium'), stripslashes(trim($dat)));
 }
 
 

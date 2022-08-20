@@ -5,6 +5,7 @@ if (!isset($_SESSION)) {
 }
 
 $root = '../../';
+$base = basename(__DIR__);
 require($root . 'inc/setup.php');
 
 $errmsg = $notif = '';
@@ -14,8 +15,8 @@ if (!empty($_POST)) {
 
     unset($_POST);
 
-    $con   = SQL('edxapp');
-    $tbl   = 'learner_profile';
+    $con   = SQL('scholarium');
+    $tbl   = 'profile';
     $check = "SELECT username FROM $tbl WHERE id<>" . URI . " AND username='$username'";
     $rs    = $con->query($check);
 
@@ -41,7 +42,6 @@ if (!isset($_SESSION['login'])) {
     exit;
 }
 
-$user = URI;
 $title = ' | Accounts';
 $addcss = '';
 

@@ -1,13 +1,12 @@
 /*		account			*/
 
 .account {
-    margin: 0 auto;
     padding: 20px;
     width: 600px;
 }
 
-.account div {
-    padding: 10px;
+div.account {
+    margin: 0 auto;
 }
 
 .account table {
@@ -21,8 +20,39 @@
 }
 
 .account input[type=text],
+.account input[type=email],
 .account textarea {
     width: 300px;
 }
 
+
+main {
+    margin: 0 auto;
+    width: 800px;
+}
+
+main > ul {
+    display: flex;
+}
+
+main > ul > li:first-child ul {
+    display: inline-block;
+    width: 200px;
+}
+
+main > ul > li:first-child li a {
+    color: var(--blue);
+    display: block;
+    padding: 20px;
+}
+
+main >ul > li:first-child li a:hover {
+    background: var(--blue);
+    color: #fff;
+    border-bottom: var(--ln_hov) solid 1px;
+}
+
+main > ul > li:last-child {
+    margin: 0 auto;
+}
 /*		account			*/

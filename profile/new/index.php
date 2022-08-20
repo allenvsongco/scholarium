@@ -5,6 +5,7 @@ if (!isset($_SESSION)) {
 }
 
 $root = '../../';
+$base = 'profile';
 require($root . 'inc/setup.php');
 
 $errmsg = $notif = '';
@@ -14,8 +15,8 @@ if (!empty($_POST)) {
 
     unset($_POST);
 
-    $con   = SQL('edxapp');
-    $tbl   = 'learner_profile';
+    $con   = SQL('scholarium');
+    $tbl   = 'profile';
     $check = "SELECT username FROM $tbl WHERE username='$username'";
     $rs    = $con->query($check);
 
@@ -36,6 +37,8 @@ if (!empty($_POST)) {
     }
 
 }
+
+$_SESSION['login_type'] = 'profile';
 
 $new = 1;
 $title = ' | Create Account';

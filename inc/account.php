@@ -2,8 +2,26 @@
 define('BASE', $base);
 define('TAB', isset($_GET['tab']) ? $_GET['tab'] : null);
 
+switch (BASE) {
+    case 'profile':
+        $user = USER_ID;
+        $hdr  = $_SESSION['login']['username'];
+        break;
+
+    case 'accounts':
+        if (TAB == '') {
+            $_SESSION['account_id'] = URI;
+        }
+
+        $user = $_SESSION['account_id'];
+        $hdr  = 'Account: ' . $_SESSION['account_id'];
+        break;
+}
+
+define('USER', $user);
+
 $x = '';
-$extra = '<input type="text" name="table" value=' . (TAB == '' ? 'profile' : TAB) . ' />';
+$extra = '<input type="hidden" name="table" value=' . (TAB == '' ? 'profile' : TAB) . ' />';
 
 if (isset($new) && $new) {
     $hdr = 'Create an account';
@@ -19,29 +37,16 @@ if (isset($new) && $new) {
     foreach ($arrNew as $k => $v) $$k = $v;
 
     $x .= populateForm($arrNew, 1);
+
 } else {
 
-    switch (BASE) {
-        case 'profile':
-            $user = USER_ID;
-            break;
-
-        case 'accounts':
-            if (TAB == '') {
-                $_SESSION['account_id'] = URI;
-            }
-
-            $user = $_SESSION['account_id'];
-            break;
-    }
-
     $ret  = (TAB != '' && TAB != 'profile') ? "j.*" : "p.*";
-    $join = (TAB != '' && TAB != 'profile') ? "LEFT JOIN " . TAB . " j ON j.user_id=p.id" : '';
+    $join = (TAB != '' && TAB != 'profile') ? "LEFT JOIN " . TAB . " j ON j.id=p.id" : '';
 
     $qry = "SELECT $ret
         FROM profile p
         $join
-        WHERE p.id=" . $user;
+        WHERE p.id=" . USER;
 
     $con = SQL('scholarium');
     $rs  = $con->query($qry);
@@ -50,20 +55,17 @@ if (isset($new) && $new) {
         $r  = $rs->fetch_assoc();
         $x .= populateForm($r);
 
-        $hdr = $r['username'];
     } else {
         $r  = $rs->fetch_fields();
         $x .= populateForm($r, 0, 1);
     }
 }
 
-function populateForm($arr, $new = 0, $empty = 0)
-{
+function populateForm($arr, $new = 0, $empty = 0) {
     $x = '';
 
     $arrAdmin = array(
         'created_on',
-        'modified_on',
         'first_timer',
         'is_active',
         'partner_admin',
@@ -79,18 +81,23 @@ function populateForm($arr, $new = 0, $empty = 0)
                 $in = prepInput($name, null, $new);
                 $k  = $name;
             }
+
         } else {
             $$k = $v;
+            $in = '';
 
-            // if( preg_match("/\bid\b|username/i", $k) && !USER_ISADMIN ) {
-            //     $x .= '<tr><input type="text" name="' . $k . '" value=' . $v . ' /></tr>';
+            if ($k == 'id') {
+                $x .= '<tr><input type="hidden" name="' . $k . '" value=' . USER . ' /></tr>';
 
-            // } else {
-            $in = prepInput($k, $v, $new);
-            // }
+            } elseif ($k == 'last_modified') {
+                $x .= '<tr><input type="hidden" name="' . $k . '" value="' . $v . '" /></tr>';
+
+            } else {
+                $in = prepInput($k, $v, $new);
+            }
         }
 
-        if ($k != 'password' && (USER_ISADMIN || (!in_array($k, $arrAdmin, true) && !USER_ISADMIN))) {
+        if (!preg_match("/\bid\b|password|last_modified/i", $k) && (USER_ISADMIN || (!in_array($k, $arrAdmin, true) && !USER_ISADMIN))) {
             $x .= '
                 <tr>
                     <td><label>' . ucwords(str_replace('_', ' ', $k)) . '</label></td>
@@ -124,10 +131,6 @@ function prepInput($k, $v, $new)
     );
 
     switch ($k) {
-        case 'id': //hidden
-            $in = '<input type="text" name="id" value=' . USER_ID . ' />';
-            break;
-
         case 'email':
             $in = '<input type="email" name="' . $k . '" value="' . $v . '" ' . ($new ? 'required' : '') . ' />';
             break;
@@ -153,13 +156,14 @@ function prepInput($k, $v, $new)
 <main>
     <ul>
         <li><?php if (!isset($new)) { ?>
-            <ul>
-                <li><a href="?tab=profile">Profile</a></li>
-                <li><a href="?tab=education">Education</a></li>
-                <li><a href="?tab=employment">Employment</a></li>
-                <li><a href="?tab=sparta_profile">SPARTA</a></li>
-            </ul>
-        <?php } ?></li>
+                <ul>
+                    <li><a href="?tab=profile">Profile</a></li>
+                    <li><a href="?tab=education">Education</a></li>
+                    <li><a href="?tab=employment">Employment</a></li>
+                    <li><a href="?tab=sparta_profile">SPARTA</a></li>
+                </ul>
+            <?php } ?>
+        </li>
 
         <li>
             <form method="post" class="account">
@@ -175,8 +179,8 @@ function prepInput($k, $v, $new)
                         </td>
                     </tr>
                     <tr>
-                        <td><span class="bad"><?php echo $errmsg; ?></span></td>
-                        <td class="rt"><a href="<?php echo SCLR_ROOT . '/' . $_SESSION['login_type'] ?>" class="btn">Cancel</a> <input type="submit" value="Submit" /></td>
+                        <td></td>
+                        <td class="rt"><span class="bad"><?php echo $errmsg; ?></span> <a href="<?php echo SCLR_ROOT . '/' . $_SESSION['login_type'] ?>" class="btn">Cancel</a> <input type="submit" value="Submit" /></td>
                     </tr>
                 </table>
             </form>

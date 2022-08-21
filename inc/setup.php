@@ -46,7 +46,7 @@ if( URI=='logout' ) {
 function set_kiu($post) {
 	$kdata = $idata = $udata = '';
 
-	$ints  = "/\bid\b|user_id|is_employed|first_timer|is_active|is_admin|status/i";
+	$ints  = "/\bid\b|is_employed|first_timer|is_active|partner_admin|is_admin|status/i";
 
 	foreach ($post as $k => $v) {
 		$v = trim_escape($v);
@@ -54,7 +54,7 @@ function set_kiu($post) {
 
 		$kdata .= " $k,";
 
-		if ($k == 'modified_on') {
+		if ($k == 'last_modified') {
 			$v = date(TMDSET);
 		}
 
@@ -68,7 +68,7 @@ function set_kiu($post) {
 	$idata = substr($idata, 0, -1);
 	$udata = substr($udata, 0, -1);
 
-	return array($username, $kdata, $idata, $udata);
+	return array($kdata, $idata, $udata);
 }
 
 function test_input(&$dat) {

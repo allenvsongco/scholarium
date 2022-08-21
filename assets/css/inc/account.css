@@ -55,4 +55,9 @@ main >ul > li:first-child li a:hover {
 main > ul > li:last-child {
     margin: 0 auto;
 }
+
+main>ul>li:last-child td:first-child {
+    width:160px;
+}
+
 /*		account			*/

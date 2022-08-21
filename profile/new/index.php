@@ -11,9 +11,8 @@ require($root . 'inc/setup.php');
 $errmsg = $notif = '';
 
 if (!empty($_POST)) {
-    list($username, $kdata, $idata, $udata) = set_kiu($_POST);
-
-    unset($_POST);
+    unset($_POST['table']);
+    $username = $_POST['username'];
 
     $con   = SQL('scholarium');
     $tbl   = 'profile';
@@ -24,7 +23,10 @@ if (!empty($_POST)) {
         $errmsg = 'Unable to continue. Username exists.';
 
     } else {
-        $qry = "INSERT IGNORE INTO $tbl (id,$kdata) VALUES('',$idata)";
+        list($kdata, $idata, $udata) = set_kiu($_POST);
+        unset($_POST);
+
+        $qry = "INSERT IGNORE INTO $tbl (id,$kdata,created_on) VALUES('',$idata,NOW())";
         $con->query($qry);
 
         $notif  = '<div class="box"><div class="box-content">';

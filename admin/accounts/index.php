@@ -11,27 +11,35 @@ require($root . 'inc/setup.php');
 $errmsg = $notif = '';
 
 if (!empty($_POST)) {
-    list($username, $kdata, $idata, $udata) = set_kiu($_POST);
+    $id  = $_POST['id'];
+    $tbl = $_POST['table'];
+    unset($_POST['table']);
 
-    unset($_POST);
+    $con = SQL('scholarium');
 
-    $con   = SQL('scholarium');
-    $tbl   = 'profile';
-    $check = "SELECT username FROM $tbl WHERE id<>" . URI . " AND username='$username'";
-    $rs    = $con->query($check);
+    if ($tbl == 'profile') {
+        $username = $_POST['username'];
 
-    if ($rs->num_rows > 0) {
-        $errmsg = 'Unable to continue. Username exists.';
+        $check = "SELECT username FROM $tbl WHERE id<>$id AND username='$username'";
+        $rs    = $con->query($check);
 
-    } else {
+        if ($rs->num_rows > 0) {
+            $errmsg = 'Unable to continue. Username exists.';
+        }
+    }
+
+    if ($errmsg == '') {
+        list($kdata, $idata, $udata) = set_kiu($_POST);
+        unset($_POST);
+
         $qry = "INSERT INTO $tbl ($kdata) VALUES($idata) ON DUPLICATE KEY UPDATE $udata";
         $con->query($qry);
 
         $notif  = '<div class="box"><div class="box-content">';
-        $notif .= "<h4>$username's profile has been updated</h4>";
+        $notif .= "<h4>Account $id has been updated</h4>";
         $notif .= '</div></div>';
 
-        echo '<META HTTP-EQUIV=Refresh CONTENT="3;URL=' . SCLR_ROOT . '/admin/accounts">';
+        echo '<META HTTP-EQUIV=Refresh CONTENT="1;URL=' . SCLR_ROOT . '/admin/accounts">';
     }
 }
 

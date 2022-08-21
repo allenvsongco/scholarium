@@ -21,7 +21,7 @@ if (isset($_SESSION['login'])) {
     </li>
     ';
 
-    if( USER_ISADMIN ) {
+    if (USER_ISADMIN) {
         $admin_link = '
         <li class="navbar-item">
             <a href="' . SCLR_ROOT . '/admin/accounts" class="navbar-link">Accounts</a>
@@ -32,7 +32,6 @@ if (isset($_SESSION['login'])) {
         </li>
     ';
     }
-
 } else {
 
     $login_link = '
@@ -48,46 +47,50 @@ if (isset($_SESSION['login'])) {
 
 ?>
 
-    <header class="header" data-header>
-        <div class="container">
+<header class="header" data-header>
+    <div class="container">
+
+        <a href="<?php echo SCLR_ROOT; ?>" class="logo">
+            <h1><?php echo strtoupper(SCLR_FULL); ?></h1>
+        </a>
+
+        <div class="overlay" data-overlay></div>
+
+        <button class="nav-open-btn" data-nav-open-btn aria-label="Open Menu">
+            <ion-icon name="menu-outline"></ion-icon>
+        </button>
+
+        <nav class="navbar" data-navbar>
+
+            <button class="nav-close-btn" data-nav-close-btn aria-label="Close Menu">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
 
             <a href="<?php echo SCLR_ROOT; ?>" class="logo">
                 <h1><?php echo strtoupper(SCLR_FULL); ?></h1>
             </a>
 
-            <div class="overlay" data-overlay></div>
+            <ul class="navbar-list">
 
-            <button class="nav-open-btn" data-nav-open-btn aria-label="Open Menu">
-                <ion-icon name="menu-outline"></ion-icon>
-            </button>
+                <li class="navbar-item">
+                    <a href="<?php echo SCLR_ROOT; ?>" class="navbar-link">Home</a>
+                </li>
 
-            <nav class="navbar" data-navbar>
+                <li class="navbar-item">
+                    <a href="<?php echo SCLR_ROOT; ?>/about" class="navbar-link">About</a>
+                </li>
 
-                <button class="nav-close-btn" data-nav-close-btn aria-label="Close Menu">
-                    <ion-icon name="close-outline"></ion-icon>
-                </button>
+                <?php echo $admin_link; ?>
 
-                <a href="<?php echo SCLR_ROOT; ?>" class="logo">
-                    <h1><?php echo strtoupper(SCLR_FULL); ?></h1>
-                </a>
+            </ul>
 
-                <ul class="navbar-list">
+            <ul class="nav-action-list">
 
-                    <li class="navbar-item">
-                        <a href="<?php echo SCLR_ROOT; ?>" class="navbar-link">Home</a>
-                    </li>
+                <?php echo $login_link . $logout_link; ?>
 
-                    <?php echo $admin_link;?>
+            </ul>
 
-                </ul>
+        </nav>
 
-                <ul class="nav-action-list">
-
-                    <?php echo $login_link . $logout_link; ?>
-
-                </ul>
-
-            </nav>
-
-        </div>
-    </header>
+    </div>
+</header>

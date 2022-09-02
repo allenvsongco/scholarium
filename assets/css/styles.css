@@ -92,15 +92,12 @@ ion-icon {
     pointer-events: none;
 }
 
+/*---------- media ----------*/
 @media (min-width: 575px) {
     .container {
         max-width: 650px;
         width: 100%;
         margin-inline: auto;
-    }
-
-    .has-scrollbar>li {
-        min-width: calc(50% - 12.5px);
     }
 
 }
@@ -121,75 +118,6 @@ ion-icon {
 @media (min-width: 992px) {
     .container {
         max-width: 970px;
-    }
-
-    .has-scrollbar>li {
-        min-width: calc(33.33% - 16.66px);
-    }
-
-    .overlay {
-        display: none;
-    }
-
-    .nav-open-btn,
-    .nav-close-btn,
-    .navbar .logo,
-    .nav-action-text,
-    .overlay {
-        display: none;
-    }
-
-    .navbar,
-    .navbar-list,
-    .nav-action-list {
-        all: unset;
-    }
-
-    .navbar-item:not(:last-child) {
-        border: none;
-    }
-
-    .navbar-list,
-    .nav-action-list {
-        display: flex;
-    }
-
-    .nav-action-list {
-        gap: 20px;
-    }
-
-    .navbar {
-        display: flex;
-        align-items: center;
-        flex-grow: 1;
-    }
-
-    .navbar-list {
-        margin-inline: auto;
-        gap: 35px;
-    }
-
-    .navbar-link {
-        font-family: var(--ff-roboto);
-        font-weight: var(--fw-500);
-    }
-
-    .nav-action-list>li:first-child {
-        display: block;
-    }
-
-    .nav-action-btn {
-        position: relative;
-    }
-
-    .nav-action-badge ion-icon {
-        --ionicon-stroke-width: 30px;
-    }
-
-    .nav-action-badge {
-        position: absolute;
-        top: 5px;
-        right: -12px;
     }
 
 }

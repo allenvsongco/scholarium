@@ -24,11 +24,15 @@ if (isset($_SESSION['login'])) {
     if (USER_ISADMIN) {
         $admin_link = '
         <li class="navbar-item">
-            <a href="' . SCLR_ROOT . '/admin/accounts" class="navbar-link">Accounts</a>
-        </li>
+            <details>
+                <summary>Admin</summary>
 
-        <li class="navbar-item">
-            <a href="' . SCLR_ROOT . '/admin" class="navbar-link">Admin</a>
+                <div class="dropdown">
+                    <a href="' . SCLR_ROOT . '/admin" class="navbar-link">Dashboard</a>
+                    <a href="' . SCLR_ROOT . '/admin/accounts" class="navbar-link">Accounts</a>
+                </div>
+            </details>
+            
         </li>
     ';
     }

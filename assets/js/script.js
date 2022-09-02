@@ -30,7 +30,7 @@ const header = document.querySelector("[data-header]");
 const goTopBtn = document.querySelector("[data-go-top]");
 
 window.addEventListener("scroll", function () {
-  if (window.scrollY >= 80) {
+  if (window.scrollY >= 40) {
     header.classList.add("active");
     goTopBtn.classList.add("active");
   } else {

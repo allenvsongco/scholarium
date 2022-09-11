@@ -1,11 +1,11 @@
 CREATE TABLE profile (
     id              int(16)         UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT,
-    username        varchar(255)    NULL DEFAULT NULL,
+    username        varchar(255)    NULL DEFAULT NULL UNIQUE,
     password        varchar(255)    NULL DEFAULT NULL,
     first_name      varchar(255)    NULL DEFAULT NULL,
     middle_name     varchar(255)    NULL DEFAULT NULL,
     last_name       varchar(255)    NULL DEFAULT NULL,
-    email           varchar(255)    NULL DEFAULT NULL,
+    email           varchar(255)    NULL DEFAULT NULL UNIQUE,
     home_address    longtext        NULL DEFAULT NULL,
     municipality    varchar(255)    NULL DEFAULT NULL,
     created_on      datetime        NULL DEFAULT NULL,

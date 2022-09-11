@@ -25,6 +25,7 @@ define('DATSET', 'M d, Y');
 define('TIMSET', 'h:ia');
 define('ZERO', '0000-00-00 00:00:00');
 define('ASIN', 'AvTFQjVqsZ3f55oF');
+define('NOREPLY', 'donotreply@scholarium.io');
 
 define('DIV_CLEAR', '<div class="clear"></div>');
 define('READ_ONLY', 'readonly="readonly"');

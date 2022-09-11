@@ -99,7 +99,9 @@
 
 .navbar .logo {
     background: var(--blue);
+    display: block;
     padding-block: 50px 40px;
+    text-align: center;
 }
 
 .navbar .logo img {

@@ -2,23 +2,25 @@
 define('BASE', $base);
 define('TAB', isset($_GET['tab']) ? $_GET['tab'] : null);
 
-switch (BASE) {
-    case 'profile':
-        $user = USER_ID;
-        $hdr  = $_SESSION['login']['username'];
-        break;
+if( isset($_SESSION['login'])) {
+    switch (BASE) {
+        case 'profile':
+            $user = USER_ID;
+            $hdr  = $_SESSION['login']['username'];
+            break;
 
-    case 'accounts':
-        if (TAB == '') {
-            $_SESSION['account_id'] = URI;
-        }
+        case 'accounts':
+            if (TAB == '') {
+                $_SESSION['account_id'] = URI;
+            }
 
-        $user = $_SESSION['account_id'];
-        $hdr  = 'Account: ' . $_SESSION['account_id'];
-        break;
+            $user = $_SESSION['account_id'];
+            $hdr  = 'Account: ' . $_SESSION['account_id'];
+            break;
+    }
 }
 
-define('USER', $user);
+define('USER', isset($user) ? $user : null);
 
 $x = '';
 $extra = '<input type="hidden" name="table" value=' . (TAB == '' ? 'profile' : TAB) . ' />';
@@ -110,8 +112,7 @@ function populateForm($arr, $new = 0, $empty = 0) {
     return $x;
 }
 
-function prepInput($k, $v, $new)
-{
+function prepInput($k, $v, $new) {
     $in = '';
     $readonly = ($k == 'id' ? READ_ONLY : '');
 

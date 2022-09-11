@@ -12,30 +12,41 @@ $errmsg = $notif = '';
 
 if (!empty($_POST)) {
     unset($_POST['table']);
-    $username = $_POST['username'];
+    foreach ($_POST as $k => $v) $$k = $v;
 
     $con   = SQL('scholarium');
     $tbl   = 'profile';
-    $check = "SELECT username FROM $tbl WHERE username='$username'";
-    $rs    = $con->query($check);
+    $usercheck = $con->query("SELECT username FROM $tbl WHERE username='$username'");
 
-    if($rs->num_rows > 0) {
+    $mailcheck = $con->query("SELECT email FROM $tbl WHERE email='$email'");
+
+    if ($usercheck->num_rows > 0) {
         $errmsg = 'Unable to continue. Username exists.';
+
+    } elseif ($mailcheck->num_rows > 0) {
+        $errmsg = 'Unable to continue. Email exists.';
 
     } else {
         list($kdata, $idata, $udata) = set_kiu($_POST);
         unset($_POST);
 
-        $qry = "INSERT IGNORE INTO $tbl (id,$kdata,created_on) VALUES('',$idata,NOW())";
+        $hash  = sha1($username . ASIN . $email);
+        $verif = SCLR_ROOT . '/profile/verif/?' . $hash;
+
+        $qry = "INSERT IGNORE INTO $tbl (id,$kdata,created_on,hash) VALUES('',$idata,NOW(),'$hash')";
         $con->query($qry);
 
+        // require($root . 'inc/mail.php');
+        // verifyEmail($email, $username, $verif);
+
         $notif  = '<div class="box"><div class="box-content">';
-        $notif .= '<h2>Congratulations! <br><br></h2>';
-        $notif .= '<h4>You have been registered to ' . SCLR_FULL . '<br>Check your email for confirmation</h4>';
-        $notif .= '<br><a href="/login">Login</a>';
+        $notif .= '<h3>Congratulations ' . $username . '!</h3><br>';
+        $notif .= '<h4>You have been registered to ' . SCLR_FULL . '</h4><br>';
+        $notif .= 'Check your email to verify and activate your account';
         $notif .= '</div></div>';
 
-        echo '<META HTTP-EQUIV=Refresh CONTENT="5;URL=' . SCLR_ROOT . '/login">';
+echo '<META HTTP-EQUIV=Refresh CONTENT="5;URL=' . $root . 'inc/testverify.php' . '">';
+        // echo '<META HTTP-EQUIV=Refresh CONTENT="5;URL=' . SCLR_ROOT . '/login">';
     }
 
 }

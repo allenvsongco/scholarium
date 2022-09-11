@@ -1,4 +1,6 @@
 <?php
+unset($_SESSION['testmail']);
+
 function verifyEmail($email, $username, $verif) {
     $x  = '<li>Welcome to ' . SCLR_FULL . '!</li>';
     $x .= '<li>To verify your account, simply click on the link below or paste it into the address bar on your favorite browser:</li>';

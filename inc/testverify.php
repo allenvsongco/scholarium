@@ -6,10 +6,15 @@ if (!isset($_SESSION)) {
 
 require('setup.php');
 
-if (!isset($base) || $base == '') {
-    $email    = 'test4@test.test';
-    $verif     = SCLR_ROOT . '/profile/verif/?' . '6c4650fefdb4f915669c6b266fc074370b605345';
-    $username = 'test4';
+if (isset($_SESSION['testmail'])) {
+    $email    = $_SESSION['testmail']['email'];
+    $username = $_SESSION['testmail']['username'];
+    $verif    = $_SESSION['testmail']['verif'];
+
+} else {
+    $email    = 'tester939@test.test';
+    $verif     = SCLR_ROOT . '/profile/verif/?' . 'fc163d5e70d967172ea5d4dd5f4734d3c3c744a7';
+    $username = 'tester939';
 }
 
 require('mail.php');

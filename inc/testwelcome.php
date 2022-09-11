@@ -6,11 +6,17 @@ if (!isset($_SESSION)) {
 
 require('setup.php');
 
-if (!isset($base) || $base == '') {
-    $email    = 'test4@test.test';
+if (isset($_SESSION['testmail'])) {
+    $email    = $_SESSION['testmail']['email'];
+    $name     = $_SESSION['testmail']['first_name'];
+    $username = $_SESSION['testmail']['username'];
+    $pass     = $_SESSION['testmail']['newpass'];
+
+} else {
+    $email    = 'tester939@test.test';
     $name     = 'test';
-    $username = 'test4';
-    $pass     = 'f2acff539a47d6c78232bba752d427f7b53fcb34';
+    $username = 'tester939';
+    $pass     = 'cb65cf3c973f93e428d12c7d5bf1d99b147b0a23';
 }
 
 require('mail.php');

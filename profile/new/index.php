@@ -38,6 +38,9 @@ if (!empty($_POST)) {
 
         // require($root . 'inc/mail.php');
         // verifyEmail($email, $username, $verif);
+$_SESSION['testmail']['email'] = $email;
+$_SESSION['testmail']['username'] = $username;
+$_SESSION['testmail']['verif'] = $verif;
 
         $notif  = '<div class="box"><div class="box-content">';
         $notif .= '<h3>Congratulations ' . $username . '!</h3><br>';

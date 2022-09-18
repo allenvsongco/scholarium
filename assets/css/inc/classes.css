@@ -29,6 +29,7 @@
 .lt { text-align:left !important; }
 .rt { text-align:right !important; }
 
+.good { color:green;font-style:italic; }
 .bad { color:red;font-style:italic; }
 
 /*	classes		*/

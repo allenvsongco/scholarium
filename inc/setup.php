@@ -6,12 +6,12 @@ $protocol = strpos(strtolower($_SERVER['SERVER_PROTOCOL']),  'https') === false 
 
 define('SCLR_FULL', 'Scholarium');
 define('SCLR_ROOT', $protocol . $_SERVER['SERVER_NAME']);
-define('DOC_ROOT', '/');
-
+define('DOC_ROOT', $_SERVER['DOCUMENT_ROOT']);
+define('IMG_PATH', '/assets/images/');
 define('ADMIN_ROOT', '/admin');
 
 define('USER_ID', isset($_SESSION['login']['id']) ? $_SESSION['login']['id'] : null);
-define('USER_NAME', isset($_SESSION['login']['name']) ? $_SESSION['login']['name'] : null);
+define('USER_NAME', isset($_SESSION['login']['username']) ? $_SESSION['login']['username'] : null);
 define('USER_ISADMIN', isset($_SESSION['login']['is_admin']) ? $_SESSION['login']['is_admin'] : null);
 
 define('DOs', isset($_GET['do']) ? test_input($_GET['do']) : null);

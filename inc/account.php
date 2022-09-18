@@ -2,7 +2,7 @@
 define('BASE', $base);
 define('TAB', isset($_GET['tab']) ? $_GET['tab'] : null);
 
-if( isset($_SESSION['login'])) {
+if (isset($_SESSION['login'])) {
     switch (BASE) {
         case 'profile':
             $user = USER_ID;
@@ -22,7 +22,7 @@ if( isset($_SESSION['login'])) {
 
 define('USER', isset($user) ? $user : null);
 
-$x = '';
+$x = $changepass = '';
 $extra = '<input type="hidden" name="table" value=' . (TAB == '' ? 'profile' : TAB) . ' />';
 
 if (isset($new) && $new) {
@@ -56,20 +56,23 @@ if (isset($new) && $new) {
     if ($rs->num_rows > 0) {
         $r  = $rs->fetch_assoc();
         $x .= populateForm($r);
-
     } else {
         $r  = $rs->fetch_fields();
         $x .= populateForm($r, 0, 1);
     }
+
+    $changepass = (TAB == '' || TAB == 'profile' ? '<a href="password" class="btn">Change Password</a>' : '');
 }
 
-function populateForm($arr, $new = 0, $empty = 0) {
+function populateForm($arr, $new = 0, $empty = 0)
+{
     $x = '';
 
     $arrAdmin = array(
         'created_on',
         'first_timer',
         'is_active',
+        'hash',
         'partner_admin',
         'is_admin',
         'status',
@@ -94,6 +97,36 @@ function populateForm($arr, $new = 0, $empty = 0) {
             } elseif ($k == 'last_modified') {
                 $x .= '<tr><input type="hidden" name="' . $k . '" value="' . $v . '" /></tr>';
 
+            } elseif ($k == 'is_verified') {
+
+                if ($v) {
+                    $in = '<span>Yes</span>';
+
+                } else {
+                    if(USER_ISADMIN) {
+                        $in = '<input type="hidden" name="' . $k . '" value=0 /><input type="checkbox" name="' . $k . '" value=1 ' . ($v ? CHECKED : '') . ' />';
+
+                    } else {
+                        $in = '<input type="hidden" name="' . $k . '" /><span>No</span>';
+                    }
+                }
+
+            } elseif ($k == 'photo_verification') {
+                if(isset($photo_verification)) {
+                    $img = DOC_ROOT . IMG_PATH . "$photo_verification";
+                    $photo_ok = file_exists($img);
+
+                    if ($photo_ok) {
+                        $in = '<a href="' . SCLR_ROOT . IMG_PATH . "$photo_verification" . '" target="_blank">View verification photo</a>';
+
+                    } else {
+                        $in = '<input type="file" name="photo_verification" accept="image/*" />';
+                    }
+
+                } else {
+                    $in .= '<input type="file" name="photo_verification" accept="image/*" />';
+                }
+
             } else {
                 $in = prepInput($k, $v, $new);
             }
@@ -112,7 +145,8 @@ function populateForm($arr, $new = 0, $empty = 0) {
     return $x;
 }
 
-function prepInput($k, $v, $new) {
+function prepInput($k, $v, $new)
+{
     $in = '';
     $readonly = ($k == 'id' ? READ_ONLY : '');
 
@@ -161,13 +195,14 @@ function prepInput($k, $v, $new) {
                     <li><a href="?tab=profile">Profile</a></li>
                     <li><a href="?tab=education">Education</a></li>
                     <li><a href="?tab=employment">Employment</a></li>
+                    <li><a href="?tab=scholarship">Scholarship</a></li>
                     <li><a href="?tab=sparta_profile">SPARTA</a></li>
                 </ul>
             <?php } ?>
         </li>
 
         <li>
-            <form method="post" class="account">
+            <form method="post" enctype="multipart/form-data" class="account">
                 <h3><?php echo $hdr; ?></h3>
                 <hr><?php echo $extra; ?>
                 <table>
@@ -179,9 +214,10 @@ function prepInput($k, $v, $new) {
                             <hr>
                         </td>
                     </tr>
+
                     <tr>
-                        <td></td>
-                        <td class="rt"><span class="bad"><?php echo $errmsg; ?></span> <a href="<?php echo SCLR_ROOT . '/' . $_SESSION['login_type'] ?>" class="btn">Cancel</a> <input type="submit" value="Submit" /></td>
+                        <td><?php echo $changepass; ?></td>
+                        <td class=" rt"><span class="bad"><?php echo $errmsg; ?></span> <a href="<?php echo SCLR_ROOT . '/' . $_SESSION['login_type'] ?>" class="btn">Cancel</a> <input type="submit" value="Submit" /></td>
                     </tr>
                 </table>
             </form>

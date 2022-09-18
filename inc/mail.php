@@ -53,7 +53,7 @@ function sendMail($email, $msg) {
 
     $x .= '<ul class="welcome_email" style="list-style:none;">';
     $x .= '<li><a href="<?php echo SCLR_ROOT; ?>" class="logo">
-        <img src="/assets/images/logo.png" title="<?php echo strtoupper(SCLR_FULL); ?>" alt="<?php echo strtoupper(SCLR_FULL); ?>" height=80 />
+        <img src="/assets/src/logo.png" title="<?php echo strtoupper(SCLR_FULL); ?>" alt="<?php echo strtoupper(SCLR_FULL); ?>" height=80 />
     </a></li>';
     $x .= $msg;
     $x .= '<li><br>

@@ -55,7 +55,7 @@ if (isset($_SESSION['login'])) {
     <div class="container">
 
         <a href="<?php echo SCLR_ROOT; ?>" class="logo">
-            <img src="/assets/images/logo.png" title="<?php echo strtoupper(SCLR_FULL); ?>" alt="<?php echo strtoupper(SCLR_FULL); ?>" height=80 />
+            <img src="/assets/src/logo.png" title="<?php echo strtoupper(SCLR_FULL); ?>" alt="<?php echo strtoupper(SCLR_FULL); ?>" height=80 />
         </a>
 
         <div class="overlay" data-overlay></div>
@@ -71,7 +71,7 @@ if (isset($_SESSION['login'])) {
             </button>
 
             <a href="<?php echo SCLR_ROOT; ?>" class="logo">
-                <img src="/assets/images/logo.png" title="<?php echo strtoupper(SCLR_FULL); ?>" alt="<?php echo strtoupper(SCLR_FULL); ?>" height=50 />
+                <img src="/assets/src/logo.png" title="<?php echo strtoupper(SCLR_FULL); ?>" alt="<?php echo strtoupper(SCLR_FULL); ?>" height=50 />
             </a>
 
             <ul class="navbar-list">

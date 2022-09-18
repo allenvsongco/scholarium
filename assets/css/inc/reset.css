@@ -135,6 +135,7 @@ p {
 hr {
     border: 0;
     border-bottom: var(--gainsboro) solid 1px;
+    width: 100% !important;
 }
 
 input,

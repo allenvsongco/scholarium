@@ -29,6 +29,22 @@ if (!empty($_POST)) {
     }
 
     if ($errmsg == '') {
+        if (isset($_POST['is_verified'])) {
+            if (isset($_FILES) && !empty($_FILES)) {
+                $file = $_FILES;
+
+                if ($file['photo_verification']['error'] == 0) {
+                    $img = $file['photo_verification'];
+                    $ext = strtolower(pathinfo($img['name'], PATHINFO_EXTENSION));
+
+                    $photo_verification  = USER_ID . "_verify.$ext";
+                    move_uploaded_file($img['tmp_name'], DOC_ROOT . IMG_PATH . "$photo_verification");
+
+                    $_POST['photo_verification'] = $photo_verification;
+                }
+            }
+        }
+
         list($kdata, $idata, $udata) = set_kiu($_POST);
         unset($_POST);
 

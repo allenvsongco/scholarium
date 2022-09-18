@@ -4,6 +4,7 @@
 @import 'inc/rounded.css';
 @import 'inc/classes.css';
 @import 'inc/account.css';
+@import 'inc/password.css';
 
 body {
     padding-block-start: 130px;

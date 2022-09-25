@@ -5,7 +5,6 @@ $con = SQL('scholarium');
 $rs  = $con->query("SELECT * FROM profile");
 
 $x .= '<tr>';
-$x .= '<th>ID</th>';
 $x .= '<th>Username</th>';
 $x .= '<th>Name</th>';
 $x .= '<th>Status</th>';
@@ -17,8 +16,7 @@ while ($r = $rs->fetch_assoc()) {
     }
 
     $x .= '<tr>';
-    $x .= '<td><a href="?' . $id . '">' . $id . '</a></td>';
-    $x .= '<td>' . $username . '</td>';
+    $x .= '<td><a href="?' . $id . '">' . $username . '</a></td>';
     $x .= '<td>' . ucwords($first_name . ' ' . $middle_name . ' ' . $last_name) . '</td>';
     $x .= '<td>' . ($status ? '<ion-icon name="checkmark-outline"></ion-icon>' : '') . '</td>';
     $x .= '</tr>';

@@ -14,15 +14,21 @@
     --btnhov    : #eee;         /* button hover */
     --dropdown  : #eee;         /* dropdown color */
 
-    --input_border : #ccc;        /* placeholder color */
-    --placeholder : #ccc;        /* placeholder color */
+    --input_border : #ccc;      /* placeholder color */
+    --placeholder : #ccc;       /* placeholder color */
 
     --ln_hov    : #959595;      /* line hover */
     --dark_hdr  : #959597;
 
+/* width */
     --fonts     : "lucida sans unicode", arial, sans-serif;
     --maxwid    : 960px;
     --mob_wid   : 600px;
+
+    --med_575   : 650px;  /* width 575px */
+    --med_768   : 720px;  /* width 768px */
+    --med_1024  : 992px;  /* width 1024px */
+    --med_1200  : 1280px; /* width 1200px */
 
 /* transitions */
     --transition-1: 0.25s ease;
@@ -34,6 +40,7 @@
     --white: hsl(0, 0%, 100%);
     --black: hsl(0, 0%, 0%);
 
+/* fonts */
     --ff-roboto: 'Roboto', sans-serif;
 
     --fs-1: 3rem;

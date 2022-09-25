@@ -64,8 +64,7 @@ if (isset($new) && $new) {
     $changepass = (TAB == '' || TAB == 'profile' ? '<a href="password" class="btn">Change Password</a>' : '');
 }
 
-function populateForm($arr, $new = 0, $empty = 0)
-{
+function populateForm($arr, $new = 0, $empty = 0) {
     $x = '';
 
     $arrAdmin = array(
@@ -145,8 +144,7 @@ function populateForm($arr, $new = 0, $empty = 0)
     return $x;
 }
 
-function prepInput($k, $v, $new)
-{
+function prepInput($k, $v, $new) {
     $in = '';
     $readonly = ($k == 'id' ? READ_ONLY : '');
 

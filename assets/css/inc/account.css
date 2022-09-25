@@ -2,7 +2,7 @@
 
 .account {
     padding: 20px;
-    width: 600px;
+    border:red solid 1px;
 }
 
 div.account {
@@ -12,52 +12,16 @@ div.account {
 .account table {
     margin: 0 auto;
     padding: 20px;
-    width: 600px;
 }
 
 .account td {
     padding: 5px;
 }
 
-.account input[type=text],
-.account input[type=email],
-.account textarea {
+form.account input[type=text],
+form.account input[type=email],
+form.account textarea {
     width: 300px;
-}
-
-
-main {
-    margin: 0 auto;
-    width: 800px;
-}
-
-main > ul {
-    display: flex;
-}
-
-main > ul > li:first-child ul {
-    display: inline-block;
-    width: 200px;
-}
-
-main > ul > li:first-child li a {
-    color: var(--blue);
-    display: block;
-    padding: 20px;
-}
-
-main >ul > li:first-child li a:hover {
-    background: var(--blue);
-    color: #fff;
-    border-bottom: var(--ln_hov) solid 1px;
-}
-
-main > ul > li:last-child {
-    margin: 0 auto;
-}
-
-main>ul>li:last-child td:first-child {
-    width:160px;
 }
 
 /*		account			*/

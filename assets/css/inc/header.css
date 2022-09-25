@@ -201,7 +201,7 @@ summary {
 @media (min-width: 768px) {
 }
 
-@media (min-width: 992px) {
+@media (min-width: 1024px) {
     .has-scrollbar>li {
         min-width: calc(33.33% - 16.66px);
     }

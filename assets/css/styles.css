@@ -5,6 +5,7 @@
 @import 'inc/classes.css';
 @import 'inc/account.css';
 @import 'inc/password.css';
+@import 'inc/cv.css';
 
 body {
     padding-block-start: 130px;
@@ -93,19 +94,50 @@ ion-icon {
     pointer-events: none;
 }
 
+main {
+    margin: 0 auto;
+}
+
+main>ul {
+    display: flex;
+}
+
+main>ul>li:first-child ul {
+    display: inline-block;
+}
+
+main>ul>li:first-child li a {
+    color: var(--blue);
+    display: block;
+    padding: 20px;
+}
+
+main>ul>li:first-child li a:hover {
+    background: var(--blue);
+    color: #fff;
+    border-bottom: var(--ln_hov) solid 1px;
+}
+
+main>ul>li:last-child {
+    margin: 0 auto;
+}
+
 /*---------- media ----------*/
-@media (min-width: 575px) {
+@media (max-width: 575px) {
     .container {
-        max-width: 650px;
+        max-width: var(--med_575);
         width: 100%;
         margin-inline: auto;
     }
 
+    main {
+        max-width: var(--med_575);
+    }
 }
 
-@media (min-width: 768px) {
+@media (max-width: 768px) {
     .container {
-        max-width: 720px;
+        max-width: var(--med_768);
     }
 
     .go-top-btn {
@@ -114,18 +146,28 @@ ion-icon {
         bottom: 30px;
         right: 30px;
     }
+
+    main {
+        max-width: var(--med_768);
+    }
 }
 
-@media (min-width: 992px) {
+@media (max-width: 1024px) {
     .container {
-        max-width: 970px;
+        max-width: var(--med_1024);
     }
 
+    main {
+        max-width: var(--med_1024);
+    }
 }
 
-@media (min-width: 1200px) {
+@media (max-width: 1200px) {
     .container {
-        max-width: 1280px;
+        max-width: var(--med_1200);
     }
 
+    main {
+        max-width: var(--med_1200);
+    }
 }

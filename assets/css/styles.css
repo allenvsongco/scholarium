@@ -50,14 +50,14 @@ body {
 
 .has-scrollbar::-webkit-scrollbar-track {
     background: var(--white);
-    border-radius: 20px;
+    border-radius: var(--radiusem);
     outline: 2px solid var(--blue);
 }
 
 .has-scrollbar::-webkit-scrollbar-thumb {
     background: var(--blue);
     border: 2px solid var(--white);
-    border-radius: 20px;
+    border-radius: var(--radiusem);
 }
 
 .has-scrollbar::-webkit-scrollbar-button {

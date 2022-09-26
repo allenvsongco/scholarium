@@ -17,10 +17,10 @@
 }
 
 .box-content>ul>li {
-    -moz-border-radius: 1em;
-    -webkit-border-radius: 1em;
-    -khtml-border-radius: 1em;
-    border-radius: 1em;
+    -moz-border-radius: var(--radiusem);
+    -webkit-border-radius: var(--radiusem);
+    -khtml-border-radius: var(--radiusem);
+    border-radius: var(--radiusem);
     padding: 20px;
 }
 

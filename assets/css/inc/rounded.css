@@ -5,10 +5,10 @@ select,
 input,
 button,
 .btn {
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
-    -khtml-border-radius: 5px;
-    border-radius: 5px;
+    -moz-border-radius: var(--radius_5);
+    -webkit-border-radius: var(--radius_5);
+    -khtml-border-radius: var(--radius_5);
+    border-radius: var(--radius_5);
 }
 
 /*	rounded corner	*/

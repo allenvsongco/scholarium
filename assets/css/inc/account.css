@@ -2,7 +2,8 @@
 
 .account {
     padding: 20px;
-    border:red solid 1px;
+    border:var(--ln_hov) solid 1px;
+    border-radius: var(--radius10);
 }
 
 div.account {

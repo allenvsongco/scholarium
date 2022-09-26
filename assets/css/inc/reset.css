@@ -56,6 +56,11 @@
     --fw-500: 500;
     --fw-600: 600;
     --fw-700: 700;
+
+/* borders */
+    --radius_5: 5px;   
+    --radius10: 10px;
+    --radiusem: 1em;
 }
 
 *,

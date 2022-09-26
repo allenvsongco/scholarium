@@ -27,9 +27,9 @@
 }
 
 #login input {
-     border:#ccc solid 1px;
-     -moz-border-radius:10px;
-     -webkit-border-radius:10px;
-     -khtml-border-radius:10px;
-     border-radius:10px;
+     border: #ccc solid 1px;
+     -moz-border-radius: var(--radius10);
+     -webkit-border-radius: var(--radius10);
+     -khtml-border-radius: var(--radius10);
+     border-radius: var(--radius10);
 }

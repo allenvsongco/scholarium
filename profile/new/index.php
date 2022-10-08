@@ -13,11 +13,12 @@ $errmsg = $notif = '';
 if (!empty($_POST)) {
     unset($_POST['table']);
     foreach ($_POST as $k => $v) $$k = $v;
+    unset($_POST);
 
-    $con   = SQL('scholarium');
-    $tbl   = 'profile';
+    $con = SQL('scholarium');
+    $tbl = 'user';
+
     $usercheck = $con->query("SELECT username FROM $tbl WHERE username='$username'");
-
     $mailcheck = $con->query("SELECT email FROM $tbl WHERE email='$email'");
 
     if ($usercheck->num_rows > 0) {
@@ -27,13 +28,14 @@ if (!empty($_POST)) {
         $errmsg = 'Unable to continue. Email exists.';
 
     } else {
-        list($kdata, $idata, $udata) = set_kiu($_POST);
-        unset($_POST);
-
         $hash  = sha1($username . ASIN . $email);
         $verif = SCLR_ROOT . '/profile/verif/?' . $hash;
 
-        $qry = "INSERT IGNORE INTO $tbl (id,$kdata,created_on,hash) VALUES('',$idata,NOW(),'$hash')";
+        $qry = "INSERT IGNORE INTO $tbl (id,username,email,date_joined,hash) VALUES('','$username','$email',NOW(),'$hash')";
+        $con->query($qry);
+        $last_id = $con->insert_id;
+
+        $qry = "INSERT IGNORE INTO profile (id,first_name,middle_name,last_name,last_modified) VALUES($last_id,'$first_name','$middle_name','$last_name',NOW())";
         $con->query($qry);
 
         // require($root . 'inc/mail.php');

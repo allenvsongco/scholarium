@@ -12,7 +12,7 @@ $errmsg = $notif = '';
 
 if (URI != '') {
     $qry = "SELECT username,first_name,email
-        FROM profile
+        FROM user, profile
         WHERE hash='" . URI . "'";
 
     $con = SQL('scholarium');
@@ -23,7 +23,7 @@ if (URI != '') {
         $newpass = sha1(URI);
         $pass = sha1($r['username'] . ASIN . $newpass);
 
-        $qry = "UPDATE profile SET status=1,password='" . $pass . "' WHERE hash='" . URI . "'";
+        $qry = "UPDATE user SET status=1,password='" . $pass . "' WHERE hash='" . URI . "'";
         $con->query($qry);
 
         // require($root . 'inc/mail.php');

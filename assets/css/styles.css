@@ -50,13 +50,19 @@ body {
 
 .has-scrollbar::-webkit-scrollbar-track {
     background: var(--white);
-    border-radius: var(--radiusem);
     outline: 2px solid var(--blue);
 }
 
 .has-scrollbar::-webkit-scrollbar-thumb {
     background: var(--blue);
     border: 2px solid var(--white);
+}
+
+.has-scrollbar::-webkit-scrollbar-track,
+.has-scrollbar::-webkit-scrollbar-thumb {
+    -moz-border-radius: var(--radiusem);
+    -webkit-border-radius: var(--radiusem);
+    -khtml-border-radius: var(--radiusem);
     border-radius: var(--radiusem);
 }
 
@@ -73,11 +79,15 @@ body {
     font-size: 20px;
     padding: 10px;
     border: 4px solid var(--white);
-    border-radius: 50%;
     opacity: 0;
     visibility: hidden;
     transition: var(--transition-1);
     z-index: 2;
+
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    -khtml-border-radius: 50%;
+    border-radius: 50%;
 }
 
 .go-top-btn.active {

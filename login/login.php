@@ -14,7 +14,7 @@ if( !empty($_POST) ) {
 
     $con  = SQL('scholarium');
     $pass = sha1($un . ASIN . $pw);
-    $qry  = "SELECT * FROM profile WHERE username='$un' AND password='$pass' AND status=1";
+    $qry  = "SELECT * FROM user WHERE username='$un' AND password='$pass' AND status=1";
     $rs   = $con->query($qry);
     $r    = mysqli_fetch_array($rs);
 
@@ -25,6 +25,9 @@ if( !empty($_POST) ) {
         $_SESSION['login']['username'] = $username;
         $_SESSION['login']['name']     = "$first_name $last_name";
         $_SESSION['login']['is_admin'] = $is_admin;
+
+        $qry = "UPDATE user SET last_login=NOW() WHERE id='$id'";
+        $con->query($qry);
 
         header('Location:/');
         unset($_SESSION['login_type']);

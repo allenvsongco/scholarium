@@ -11,4 +11,10 @@ button,
     border-radius: var(--radius_5);
 }
 
+.rad10 {
+    -moz-border-radius: var(--radius10);
+    -webkit-border-radius: var(--radius10);
+    -khtml-border-radius: var(--radius10);
+    border-radius: var(--radius10);
+}
 /*	rounded corner	*/

@@ -2,7 +2,7 @@
 $x = '';
 
 $con = SQL('scholarium');
-$rs  = $con->query("SELECT * FROM profile");
+$rs  = $con->query("SELECT * FROM user,profile");
 
 $x .= '<tr>';
 $x .= '<th>Username</th>';

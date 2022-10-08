@@ -19,7 +19,7 @@ if (!empty($_POST)) {
     $confirm = stripslashes(trim($_POST['confirm']));
 
     $con  = SQL('scholarium');
-    $qry  = "SELECT password FROM profile WHERE username='$un' AND password='$oldpw' AND status=1";
+    $qry  = "SELECT password FROM user WHERE username='$un' AND password='$oldpw' AND status=1";
     $pass   = $con->query($qry);
 
     if ($pass->num_rows == 0) {
@@ -30,7 +30,7 @@ if (!empty($_POST)) {
 
     } else {
         $pass = sha1($un . ASIN . $newpw);
-        $qry  = "UPDATE profile SET password='$pass' WHERE username='$un'";
+        $qry  = "UPDATE user SET password='$pass' WHERE username='$un'";
         $con->query($qry);
 
         $errmsg = 'Password successfully changed.';

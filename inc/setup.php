@@ -47,7 +47,7 @@ if( URI=='logout' ) {
 function set_kiu($post) {
 	$kdata = $idata = $udata = '';
 
-	$ints  = "/\bid\b|is_employed|first_timer|is_active|partner_admin|is_admin|status/i";
+	$ints  = "/\bid\b|is_employed|first_timer|is_active|is_partner|is_admin|status/i";
 
 	foreach ($post as $k => $v) {
 		$v = trim_escape($v);

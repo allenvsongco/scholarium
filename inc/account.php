@@ -68,11 +68,12 @@ function populateForm($arr, $new = 0, $empty = 0) {
     $x = '';
 
     $arrAdmin = array(
-        'created_on',
+        'date_joined',
+        'last_login',
         'first_timer',
         'is_active',
         'hash',
-        'partner_admin',
+        'is_partner',
         'is_admin',
         'status',
     );
@@ -152,7 +153,7 @@ function prepInput($k, $v, $new) {
         'first_timer',
         'is_active',
         'is_employed',
-        'partner_admin',
+        'is_partner',
         'is_admin',
         'status',
     );

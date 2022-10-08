@@ -3,6 +3,7 @@ class Auth extends API {
 
      public function __construct($request, $origin) {
           parent::__construct($request);
+
           $this->user = $this->request['user'];
 
 // echo "$origin==".$_SERVER['SERVER_NAME']."\n\n";
@@ -45,48 +46,54 @@ class Auth extends API {
      }
 
      protected function login() {
-          $this->pass = $this->request['pass'];
 
-          include_once 'config/DB.php';
-          include_once 'models/Connect.php';
+          if ($this->method == 'POST') {
+               $this->pass = $this->request['pass'];
 
-          $DB   = new DB();
-          $db   = $DB->connect('scholarium');
-          $post = new Connect($db);
-          $rs   = $post->login($this->user, $this->pass);
+               include_once 'config/DB.php';
+               include_once 'models/Connect.php';
 
-          return $this->send($rs);
+               $DB   = new DB();
+               $db   = $DB->connect('scholarium');
+               $post = new Connect($db);
+               $rs   = $post->login($this->user, $this->pass);
+
+               return $this->send($rs);
+
+          } else {
+               http_response_code(405);
+          }
      }
 
      protected function me() {
           // /profile
+          // /education
+          // /employment
+          // /scholarship
+          // /sparta_profile
 
-          // params: ?dsdid=DIST_ID
+          // params: ?user=USERNAME
 
           if ($this->method == 'GET') {
-               $arg = $join = $wer = $and = $yr = $wk = $order = $view = $refno = '';
+               $join = $wer = $and = $order = '';
                $ret = '*';
 
                if (isset($this->verb)) {
-                    $age = "(SELECT DATEDIFF(CONCAT(SUBSTRING(dssetd,1,4),'-',SUBSTRING(dssetd,5,2),'-',SUBSTRING(dssetd,-2)), '" . $this->pmstart . "') FROM diamondl_distributor.distributors WHERE dsdid=d.dsdid) age";
-                    $ret  = "dsdid,CONCAT(dslnam,', ',dsfnam,' ',SUBSTRING(dsmnam,1,1)) name,dssid,(SELECT CONCAT(dslnam,', ',dsfnam,' ',SUBSTRING(dsmnam,1,1)) FROM distributors WHERE dsdid=d.dssid) sponsor,$age ";
-                    $join = preg_match("/bomstp|bohstp|ormstp/i", $this->verb) ? 'LEFT JOIN ' . $this->verb . ' stp ON ' : '';
-                    $find = "d.dsdid = '" . $this->user . "'";
-
-                    if (!empty($this->args)) {
-                         $yr = (!empty($this->args[0])) ? $this->args[0] : '';
-                         $wk = (!empty($this->args[1])) ? $this->args[1] : '';
-
-                         $act   = $yr;
-                         $refno = $wk;
-                    }
+                    $ret  = "u.id,username,email,is_global,is_admin,is_partner ";
+                    $join = preg_match("/profile|education|employment/i", $this->verb) ? 'LEFT JOIN ' . $this->verb . ' stp ON ' : '';
+                    $find = "u.username = '" . $this->user . "'";
 
                     switch ($this->verb) {
                          case '':
                               break;
 
                          case 'profile':
-                              $ret  .= ',d.*';
+                         case 'education':
+                         case 'employment':
+                         case 'scholarship':
+                         case 'sparta_profile':
+                              $join .= 'stp.id=u.id';
+                              $ret  .= ',stp.*';
                               break;
                               
                         default:
@@ -103,7 +110,7 @@ class Auth extends API {
                $DB   = new DB();
                $db   = $DB->connect('scholarium');
                $post = new Connect($db);
-               $rs   = $post->distributors($this->user, $ret, $wer, $join, $order);
+               $rs   = $post->users($this->user, $ret, $wer, $join, $order);
 
                return $this->send($rs);
 

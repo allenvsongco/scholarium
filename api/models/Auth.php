@@ -6,32 +6,45 @@ class Auth extends API {
 
           $this->user = $this->request['user'];
 
-// echo "$origin==".$_SERVER['SERVER_NAME']."\n\n";
-//           if ($origin!=$_SERVER['SERVER_NAME'])
-//                throw new Exception('Unauthorized access');
+          $auth_type = strstr($_SERVER['HTTP_AUTHORIZATION'], ' ', 1);
 
-          if( !isset( $_SERVER['PHP_AUTH_USER'] ) ) {
-               header('WWW-Authenticate: Basic realm="Scholarium"');
-               header('HTTP/1.0 401 Unauthorized');
-               echo 'Authentication FAILED';
+          // echo "$origin==".$_SERVER['SERVER_NAME']."\n\n";
+          //           if ($origin!=$_SERVER['SERVER_NAME'])
+          //                throw new Exception('Unauthorized access');
 
-               exit;
+          switch($auth_type) {
+               case 'Bearer':
+                    $this->token = trim(strstr($_SERVER['HTTP_AUTHORIZATION'], ' '));
 
-          } else {
+                    break;
 
-               list($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] ) = explode(':' , base64_decode( substr( $_SERVER['HTTP_AUTHORIZATION'], 6) ) );
-               $this->coid   = $_SERVER['PHP_AUTH_USER'];
-               $this->apikey = $_SERVER['PHP_AUTH_PW'];
+               case 'Basic':
+                    if (!isset($_SERVER['PHP_AUTH_USER'])) {
+                         header('WWW-Authenticate: Basic realm="Scholarium"');
+                         header('HTTP/1.0 401 Unauthorized');
+                         echo 'Authentication FAILED';
 
-               $arrCoid = array(
-                    'tujyBpbgtum3xcctFvXZgr4ZnaRsddVRpvkwJuq8B3KEwfd4BZQtrRaj5r4vdtDm' => 'TMTG',
-                    'b3vg5vz5t6QJqRccTTysUtaYzF9bmUUrZXDNP54hxyF3Nr6azNdmAHXRrYjSQXA5' => 'Partner'
-               );
+                         exit;
 
-               if ( array_key_exists($this->apikey, $arrCoid) && $arrCoid[$this->apikey] == $this->coid ) {
- 
-               } else
-                    throw new Exception('Unauthorized access');
+                    } else {
+
+                         list($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) = explode(':', base64_decode(substr($_SERVER['HTTP_AUTHORIZATION'], 6)));
+                         $this->coid   = $_SERVER['PHP_AUTH_USER'];
+                         $this->apikey = $_SERVER['PHP_AUTH_PW'];
+
+                         $arrCoid = array(
+                              'tujyBpbgtum3xcctFvXZgr4ZnaRsddVRpvkwJuq8B3KEwfd4BZQtrRaj5r4vdtDm' => 'TMTG',
+                              'b3vg5vz5t6QJqRccTTysUtaYzF9bmUUrZXDNP54hxyF3Nr6azNdmAHXRrYjSQXA5' => 'Partner'
+                         );
+
+                         if (array_key_exists($this->apikey, $arrCoid) && $arrCoid[$this->apikey] == $this->coid) {
+                         } else
+                              throw new Exception('Unauthorized access');
+                    }
+                    break;
+
+               case '':
+                    break;
 
           }
 
@@ -46,7 +59,6 @@ class Auth extends API {
      }
 
      protected function login() {
-
           if ($this->method == 'POST') {
                $this->pass = $this->request['pass'];
 
@@ -81,7 +93,7 @@ class Auth extends API {
                if (isset($this->verb)) {
                     $ret  = "u.id,username,email,is_global,is_admin,is_partner ";
                     $join = preg_match("/profile|education|employment/i", $this->verb) ? 'LEFT JOIN ' . $this->verb . ' stp ON ' : '';
-                    $find = "u.username = '" . $this->user . "'";
+                    $find = "u.hash = '" . $this->token . "'";
 
                     switch ($this->verb) {
                          case '':

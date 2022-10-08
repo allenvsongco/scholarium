@@ -21,6 +21,11 @@ abstract class API {
       */
      protected $apikey = Null;
      /**
+      * Property: token
+      * The API token
+      */
+     protected $token = Null;
+     /**
      * Property: method
      * The HTTP method this request was made in, either GET, POST, PUT or DELETE
      */

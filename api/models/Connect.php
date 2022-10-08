@@ -11,7 +11,7 @@ class Connect {
      public function login($un, $pw) {
           $password = sha1($un . $this->asin . $pw);
 
-          $ret = "id,username,email,is_global,is_admin,is_partner";
+          $ret = "hash token";
           $qry = "SELECT $ret FROM user WHERE username='$un' AND password='$password' AND status=1";
           $ds = $this->conn->prepare($qry);
           $ds->execute();

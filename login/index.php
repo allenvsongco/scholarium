@@ -6,8 +6,6 @@ if (!isset($_SESSION)) {
 
 $root = '../';
 require($root . 'inc/setup.php');
-// echo sha1('test' . ASIN . 'asdfasdf');
-echo hash('sha256', ASIN);
 
 $title = ' | ' . ucwords(isset($_SESSION['login_type']) && $_SESSION['login_type'] != 'profile' ? $_SESSION['login_type'] : 'Login');
 $addcss = 'login';

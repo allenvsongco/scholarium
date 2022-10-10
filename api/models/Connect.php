@@ -73,7 +73,7 @@ class Connect {
 
      }
 
-     public function auth($ret, $tbl, $wer = '', $join = '', $order = '')
+     public function auth($endpoint, $ret, $tbl, $wer = '', $join = '', $order = '')
      {
           $headers = apache_request_headers();
 
@@ -84,13 +84,17 @@ class Connect {
                     $decoded = JWT::decode($token, new Key($this->key, 'HS256'));
                     $payload = json_decode(json_encode((array) $decoded), true);
 
+                    $src  = '';
                     $data = $payload['data'];
-                    $src  = $data['id'];
+
+                    if ($endpoint == 'me') {
+                         $src  = $data['id'];
+                    }
 
                     $qry = "SELECT $ret
                     FROM $tbl
                     $join $wer $src $order";
-
+// echo $qry;
                     $rs = $this->conn->prepare($qry);
                     $rs->execute();
                     return $rs;

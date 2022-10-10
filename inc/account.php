@@ -6,7 +6,7 @@ if (isset($_SESSION['login'])) {
     switch (BASE) {
         case 'profile':
             $user = USER_ID;
-            $hdr  = $_SESSION['login']['username'];
+            $hdr  = USER_NAME;
             break;
 
         case 'accounts':
@@ -15,7 +15,7 @@ if (isset($_SESSION['login'])) {
             }
 
             $user = $_SESSION['account_id'];
-            $hdr  = 'Account: ' . $_SESSION['account_id'];
+            $hdr  = 'Account: ' . sprintf("%016d", $_SESSION['account_id']);
             break;
     }
 }
@@ -42,24 +42,28 @@ if (isset($new) && $new) {
 
 } else {
 
-    $ret  = (TAB != '' && TAB != 'profile') ? "j.*" : "p.*";
-    $join = (TAB != '' && TAB != 'profile') ? "LEFT JOIN " . TAB . " j ON j.id=p.id" : '';
+    $data = authAPI('me/' . (TAB == '' ? 'profile' : TAB));
 
-    $qry = "SELECT $ret
-        FROM profile p
-        $join
-        WHERE p.id=" . USER;
+    $x .= populateForm($data[0]);
 
-    $con = SQL('scholarium');
-    $rs  = $con->query($qry);
+    // $ret  = (TAB != '' && TAB != 'profile') ? "j.*" : "p.*";
+    // $join = (TAB != '' && TAB != 'profile') ? "LEFT JOIN " . TAB . " j ON j.id=p.id" : '';
 
-    if ($rs->num_rows > 0) {
-        $r  = $rs->fetch_assoc();
-        $x .= populateForm($r);
-    } else {
-        $r  = $rs->fetch_fields();
-        $x .= populateForm($r, 0, 1);
-    }
+    // $qry = "SELECT $ret
+    //     FROM profile p
+    //     $join
+    //     WHERE p.id=" . USER;
+
+    // $con = SQL('scholarium');
+    // $rs  = $con->query($qry);
+
+    // if ($rs->num_rows > 0) {
+    //     $r  = $rs->fetch_assoc();
+    //     $x .= populateForm($r);
+    // } else {
+    //     $r  = $rs->fetch_fields();
+    //     $x .= populateForm($r, 0, 1);
+    // }
 
     $changepass = (TAB == '' || TAB == 'profile' ? '<a href="password" class="btn">Change Password</a>' : '');
 }
@@ -73,8 +77,9 @@ function populateForm($arr, $new = 0, $empty = 0) {
         'first_timer',
         'is_active',
         'hash',
-        'is_partner',
+        'is_global',
         'is_admin',
+        'is_partner',
         'status',
     );
 
@@ -153,8 +158,9 @@ function prepInput($k, $v, $new) {
         'first_timer',
         'is_active',
         'is_employed',
-        'is_partner',
+        'is_global',
         'is_admin',
+        'is_partner',
         'status',
     );
 

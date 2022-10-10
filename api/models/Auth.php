@@ -26,7 +26,7 @@ class Auth extends API {
                          'b3vg5vz5t6QJqRccTTysUtaYzF9bmUUrZXDNP54hxyF3Nr6azNdmAHXRrYjSQXA5' => 'Partner'
                     );
 
-                    if (array_key_exists($this->apikey, $arrCoid) && $arrCoid[$this->apikey] == $this->coid) {
+                    if (array_key_exists($_SERVER['PHP_AUTH_PW'], $arrCoid) && $arrCoid[$this->apikey] == $_SERVER['PHP_AUTH_USER']) {
                     } else
                          throw new Exception('Unauthorized access');
                }
@@ -60,17 +60,19 @@ class Auth extends API {
           // /scholarship
           // /sparta_profile
 
-          // params: ?user=USERNAME
+          // params: ?id=USER_ID
 
           if ($this->method == 'GET') {
                $tbl = $join = $order = '';
                $ret = '*';
 
                if (isset($this->verb)) {
-                    $ret  = "u.id,username,email,is_global,is_admin,is_partner ";
+                    $ret  = "u.id ";
 
                     switch ($this->verb) {
                          case '':
+                              $ret  .= ',username,first_name,last_name,is_admin';
+                              $join .= 'LEFT JOIN profile stp ON stp.id=u.id';
                               break;
 
                          case 'profile':
@@ -97,10 +99,51 @@ class Auth extends API {
                $DB   = new DB();
                $db   = $DB->connect('scholarium');
                $post = new Connect($db);
-               $rs   = $post->auth($ret, $tbl, $wer, $join, $order);
+               $rs   = $post->auth('me', $ret, $tbl, $wer, $join, $order);
 
                return $this->send($rs);
 
+          } else {
+               http_response_code(405);
+          }
+     }
+
+     protected function users()
+     {
+          // /profile
+          // /education
+          // /employment
+          // /scholarship
+          // /sparta_profile
+
+          if ($this->method == 'GET') {
+               $tbl = $join = $order = '';
+               $ret = 'u.id,username,first_name,middle_name,last_name,status';
+
+               if (isset($this->verb)) {
+                    switch ($this->verb) {
+                         case '':
+                              $join .= 'LEFT JOIN profile stp ON stp.id=u.id';
+                              break;
+
+                         default:
+                              return 'Invalid argument: ' . $this->verb;
+                              exit;
+                    }
+               }
+
+               include_once 'config/DB.php';
+               include_once 'models/Connect.php';
+
+               $tbl  = 'user u';
+               $order= 'ORDER BY id';
+
+               $DB   = new DB();
+               $db   = $DB->connect('scholarium');
+               $post = new Connect($db);
+               $rs   = $post->auth('users', $ret, $tbl, '', $join, $order);
+
+               return $this->send($rs);
           } else {
                http_response_code(405);
           }

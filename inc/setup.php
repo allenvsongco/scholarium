@@ -7,8 +7,18 @@ $protocol = strpos(strtolower($_SERVER['SERVER_PROTOCOL']),  'https') === false 
 define('SCLR_FULL', 'Scholarium');
 define('SCLR_ROOT', $protocol . $_SERVER['SERVER_NAME']);
 define('DOC_ROOT', $_SERVER['DOCUMENT_ROOT']);
-define('IMG_PATH', '/assets/images/');
 define('ADMIN_ROOT', '/admin');
+define('IMG_PATH', '/assets/images/');
+define('API_PATH', 'https://scholarium.tmtg-clone.click/api/');
+
+if (isset($_SESSION['token']) && !isset($_SESSION['login'])) {
+	$data = authAPI('me');
+
+	$_SESSION['login']['id']       = $data[0]['id'];
+	$_SESSION['login']['username'] = $data[0]['username'];
+	$_SESSION['login']['name']     = $data[0]['first_name'] . ' ' . $data[0]['last_name'];
+	$_SESSION['login']['is_admin'] = $data[0]['is_admin'];
+}
 
 define('USER_ID', isset($_SESSION['login']['id']) ? $_SESSION['login']['id'] : null);
 define('USER_NAME', isset($_SESSION['login']['username']) ? $_SESSION['login']['username'] : null);
@@ -72,6 +82,39 @@ function set_kiu($post) {
 	return array($kdata, $idata, $udata);
 }
 
+function authAPI($endpoint) {
+	$curl = curl_init();
+
+	curl_setopt_array($curl, array(
+		CURLOPT_URL => API_PATH . '/' . $endpoint,
+		CURLOPT_RETURNTRANSFER => true,
+		CURLOPT_ENCODING => '',
+		CURLOPT_MAXREDIRS => 10,
+		CURLOPT_TIMEOUT => 0,
+		CURLOPT_FOLLOWLOCATION => true,
+		CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+		CURLOPT_CUSTOMREQUEST => 'GET',
+		CURLOPT_HTTPHEADER => array(
+			'Authorization: Bearer ' . $_SESSION['token']
+		),
+	));
+
+	//Execute the cURL request. Convert response to json
+	$response = json_decode(curl_exec($curl), true);
+
+	//Check if any errors occured.
+	if (curl_errno($curl)) {
+		// throw the an Exception.
+		throw new Exception(curl_error($curl));
+	}
+
+	curl_close($curl);
+
+	//get the response.
+	return $response['data'];
+
+}
+
 function test_input(&$dat) {
     return htmlspecialchars(stripslashes(trim($dat)), ENT_QUOTES);
 }
@@ -79,6 +122,5 @@ function test_input(&$dat) {
 function trim_escape($dat) {
 	return mysqli_real_escape_string(SQL('scholarium'), stripslashes(trim($dat)));
 }
-
 
 ?>

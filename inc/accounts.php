@@ -1,8 +1,7 @@
 <?php
 $x = '';
 
-$con = SQL('scholarium');
-$rs  = $con->query("SELECT * FROM user,profile");
+$data = authAPI('users');
 
 $x .= '<tr>';
 $x .= '<th>Username</th>';
@@ -10,8 +9,8 @@ $x .= '<th>Name</th>';
 $x .= '<th>Status</th>';
 $x .= '</tr>';
 
-while ($r = $rs->fetch_assoc()) {
-    foreach ($r as $k => $v) {
+foreach ($data as $user) {
+    foreach ($user as $k => $v) {
         $$k = $v;
     }
 

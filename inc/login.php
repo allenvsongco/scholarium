@@ -9,9 +9,9 @@ if (isset($_SESSION['bad_login'])) {
 
 <div class="box">
     <div class="box-content">
-        <form method="post" action="https://scholarium.tmtg-clone.click/api/login" enctype="multipart/form-data" id="login">
+        <form method="post" action="login.php" enctype="multipart/form-data" id="login">
             <ul>
-                <li><input type="text" name="user" placeholder="Username" value="" required /></li>
+                <li><input type="text" name="user" placeholder="Username" required /></li>
                 <li><input type="password" name="pass" placeholder="Password" minlength="8" required /></li>
                 <li><input type="submit" name="submit" value="Login" /></li>
                 <?php if (!isset($_SESSION['login_type']) || $_SESSION['login_type'] != 'admin') { ?>

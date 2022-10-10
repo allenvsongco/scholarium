@@ -14,32 +14,36 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 use \Firebase\JWT\JWT;
+use \Firebase\JWT\Key;
 
 define('SCLR_ROOT', $_SERVER['SERVER_NAME']);
 
 class Connect {
      protected $conn;
-     protected $asin;
      protected $key;
 
-     public function __construct($db) {
+     public function __construct($db)
+     {
+          include_once 'config/asin.config';
+
           $this->conn = $db;
-          $this->asin = 'AvTFQjVqsZ3f55oF';
-          $this->key = hash('sha256', $this->asin);
+          $this->asin = $asin;
+          $this->key  = $key;
      }
 
-     public function login($un, $pw) {
+     public function login($un, $pw)
+     {
           $password = sha1($un . $this->asin . $pw);
 
           $ret = "id,username,email";
           $qry = "SELECT $ret FROM user WHERE username='$un' AND password='$password' AND status=1";
-          $ds = $this->conn->prepare($qry);
-          $ds->execute();
+          $rs = $this->conn->prepare($qry);
+          $rs->execute();
 
-          if( $ds->rowCount() > 0 ) {
-               $dat = $ds->fetch();
+          if( $rs->rowCount() > 0 ) {
+               $dat = $rs->fetch();
                $iat = time();
-               $exp = time() + (60 * 60);
+               $exp = time() + (60 * 60); // 60 mins from issue
 
                foreach ($dat as $k => $v) {
                     $$k = $v;
@@ -47,9 +51,9 @@ class Connect {
 
                $payload = [
                     'iss' => SCLR_ROOT . '/api',  // issuer
-                    'aud' => SCLR_ROOT,           // issuer
+                    'aud' => SCLR_ROOT,           // audience
                     'iat' => $iat,                // time JWT was issued
-                    'exp' => $exp,                // time JWT was expires, 60 mins
+                    'exp' => $exp,                // time JWT was expires
                     'data' => [
                          'id' => $id,
                          'username' => $username,
@@ -57,29 +61,45 @@ class Connect {
                     ]
                ];
 
-               $jwt = JWT::encode($payload,$this->key, 'HS256');
+               $jwt = JWT::encode($payload, $this->key, 'HS256');
                return [
                     'token' => $jwt,
                     'expires' => $exp,
                ];
-               return $payload;
 
           } else {
-               return array('fail');
+               return ['fail'];
           };
 
      }
 
-     public function users($id, $ret, $wer = '', $join = '', $order = '') {
-          $qry = "SELECT $ret
-               FROM user u
-               $join
-               $wer
-               $order";
+     public function auth($ret, $tbl, $wer = '', $join = '', $order = '')
+     {
+          $headers = apache_request_headers();
 
-          $rs = $this->conn->prepare($qry);
-          $rs->execute();
-          return $rs;
+          if(isset($headers['Authorization'])) {
+               $token = trim(str_replace('Bearer ', '', $headers['Authorization']));
+
+               try {
+                    $decoded = JWT::decode($token, new Key($this->key, 'HS256'));
+                    $payload = json_decode(json_encode((array) $decoded), true);
+
+                    $data = $payload['data'];
+                    $src  = $data['id'];
+
+                    $qry = "SELECT $ret
+                    FROM $tbl
+                    $join $wer $src $order";
+
+                    $rs = $this->conn->prepare($qry);
+                    $rs->execute();
+                    return $rs;
+
+               } catch (\Exception $e) {
+                    return ['Invalid token'];
+               }
+          }
+
      }
 
 }

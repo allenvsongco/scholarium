@@ -1,16 +1,6 @@
 <?php
 abstract class API {
      /**
-     * Property: user
-     * The id of the user
-     */
-     protected $user = Null;
-     /**
-     * Property: pass
-     * The password of the user
-     */
-     protected $pass = Null;
-     /**
       * Property: coid
       * The Company id of the user
       */
@@ -20,11 +10,6 @@ abstract class API {
       * The API key of the company
       */
      protected $apikey = Null;
-     /**
-      * Property: token
-      * The API token
-      */
-     protected $token = Null;
      /**
      * Property: method
      * The HTTP method this request was made in, either GET, POST, PUT or DELETE
@@ -139,6 +124,27 @@ abstract class API {
                500 => 'Internal Server Error',
           );
           return ($status[$code]) ? $status[$code] : $status[500];
+     }
+
+     protected function send($rs, $ret = '')
+     {
+          $arr['data'] = array();
+
+          if (is_array($rs)) {
+               array_push($arr['data'], $rs);
+               return $arr;
+          } elseif ($rs->rowCount() > 0) {
+               if ($ret != '') $arr['lastid'] = $ret;
+
+               while ($rw = $rs->fetch(PDO::FETCH_ASSOC)) {
+                    foreach ($rw as $k => $v) $item[$k] = $v;
+                    array_push($arr['data'], $item);
+               }
+
+               return $arr;
+          } else {
+               return array('data' => null);
+          }
      }
 }
 ?>

@@ -44,28 +44,11 @@ if (isset($new) && $new) {
 
     $data = authAPI('me/' . (TAB == '' ? 'profile' : TAB));
 
-    $x .= populateForm($data[0]);
+    if (isset($data[0])) {
+        $x .= populateForm($data[0]);
+        $changepass = (TAB == '' || TAB == 'profile' ? '<a href="password" class="btn">Change Password</a>' : '');
+    }
 
-    // $ret  = (TAB != '' && TAB != 'profile') ? "j.*" : "p.*";
-    // $join = (TAB != '' && TAB != 'profile') ? "LEFT JOIN " . TAB . " j ON j.id=p.id" : '';
-
-    // $qry = "SELECT $ret
-    //     FROM profile p
-    //     $join
-    //     WHERE p.id=" . USER;
-
-    // $con = SQL('scholarium');
-    // $rs  = $con->query($qry);
-
-    // if ($rs->num_rows > 0) {
-    //     $r  = $rs->fetch_assoc();
-    //     $x .= populateForm($r);
-    // } else {
-    //     $r  = $rs->fetch_fields();
-    //     $x .= populateForm($r, 0, 1);
-    // }
-
-    $changepass = (TAB == '' || TAB == 'profile' ? '<a href="password" class="btn">Change Password</a>' : '');
 }
 
 function populateForm($arr, $new = 0, $empty = 0) {

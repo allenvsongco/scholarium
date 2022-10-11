@@ -1,5 +1,4 @@
 <?php
-header("Access-Control-Allow-Orgin: *");
 include_once 'models/API.class.php';
 include_once 'models/Auth.php';
 

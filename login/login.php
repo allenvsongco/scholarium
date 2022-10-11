@@ -8,12 +8,13 @@ if( !empty($_POST) ) {
     $creds['user'] = stripslashes(trim($_POST['user']));
     $creds['pass'] = stripslashes(trim($_POST['pass']));
 
-    $token = authAPI($creds);
+    $token = loginAPI($creds);
 
     $_SESSION['token'] = null;
 
     if($token) {
-        $_SESSION['token'] = $token;
+        $_SESSION['token']['token'] = $token['token'];
+        $_SESSION['token']['expires'] = $token['expires'];
         header('Location:/');
 
     } else {
@@ -23,7 +24,7 @@ if( !empty($_POST) ) {
 
 }
 
-function authAPI($post) {
+function loginAPI($post) {
     $headers = array(
         'Authorization: Basic ' . base64_encode('TMTG' . ":" . 'tujyBpbgtum3xcctFvXZgr4ZnaRsddVRpvkwJuq8B3KEwfd4BZQtrRaj5r4vdtDm')
     );
@@ -56,7 +57,7 @@ function authAPI($post) {
 
     //get the response.
     if(array_key_exists('token', $response['data'][0])) {
-        return $response['data'][0]['token'];
+        return $response['data'][0];
     } else {
         return false;
     }

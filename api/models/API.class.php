@@ -133,6 +133,7 @@ abstract class API {
           if (is_array($rs)) {
                array_push($arr['data'], $rs);
                return $arr;
+
           } elseif ($rs->rowCount() > 0) {
                if ($ret != '') $arr['lastid'] = $ret;
 
@@ -142,6 +143,7 @@ abstract class API {
                }
 
                return $arr;
+
           } else {
                return array('data' => null);
           }

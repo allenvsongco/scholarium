@@ -9,16 +9,18 @@ $x .= '<th>Name</th>';
 $x .= '<th>Status</th>';
 $x .= '</tr>';
 
-foreach ($data as $user) {
-    foreach ($user as $k => $v) {
-        $$k = $v;
-    }
+if ($data) {
+    foreach ($data as $user) {
+        foreach ($user as $k => $v) {
+            $$k = $v;
+        }
 
-    $x .= '<tr>';
-    $x .= '<td><a href="?' . $id . '">' . $username . '</a></td>';
-    $x .= '<td>' . ucwords($first_name . ' ' . $middle_name . ' ' . $last_name) . '</td>';
-    $x .= '<td>' . ($status ? '<ion-icon name="checkmark-outline"></ion-icon>' : '') . '</td>';
-    $x .= '</tr>';
+        $x .= '<tr>';
+        $x .= '<td><a href="?' . $id . '">' . $username . '</a></td>';
+        $x .= '<td>' . ucwords($first_name . ' ' . $middle_name . ' ' . $last_name) . '</td>';
+        $x .= '<td>' . ($status ? '<ion-icon name="checkmark-outline"></ion-icon>' : '') . '</td>';
+        $x .= '</tr>';
+    }
 }
 
 unset($_SESSION['account_id']);

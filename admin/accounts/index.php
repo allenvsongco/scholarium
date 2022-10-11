@@ -4,6 +4,11 @@ if (!isset($_SESSION)) {
     session_start();
 }
 
+if (!isset($_SESSION['token']) || !isset($_SESSION['login']) || !$_SESSION['login']['is_admin']) {
+    header('Location:/');
+    exit;
+}
+
 $root = '../../';
 $base = basename(__DIR__);
 require($root . 'inc/setup.php');
@@ -44,11 +49,6 @@ if (!empty($_POST)) {
 }
 
 $_SESSION['login_type'] = 'profile';
-
-if (!isset($_SESSION['login'])) {
-    header('Location:/login');
-    exit;
-}
 
 $title = ' | Accounts';
 $addcss = '';

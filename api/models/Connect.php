@@ -43,7 +43,9 @@ class Connect {
           if( $rs->rowCount() > 0 ) {
                $dat = $rs->fetch();
                $iat = time();
-               $exp = time() + (60 * 60); // 60 mins from issue
+
+               $delay = 60;  // expires x mins from issue
+               $exp = time() + (60 * $delay);
 
                foreach ($dat as $k => $v) {
                     $$k = $v;
@@ -68,42 +70,46 @@ class Connect {
                ];
 
           } else {
-               return ['fail'];
+               return false;
           };
 
      }
 
-     public function auth($endpoint, $ret, $tbl, $wer = '', $join = '', $order = '')
+     public function pass($un, $pw, $comm, $tbl, $add, $wer)
+     {
+          $pass = sha1($un . $this->asin . $pw);
+          $qry = "$comm $tbl $add '$pass' $wer '$un'";
+
+          $rs = $this->conn->prepare($qry);
+          $rs->execute();
+          return ['success'=>'password changed'];
+     }
+
+     public function crud($qry)
+     {
+// echo $qry;
+          $rs = $this->conn->prepare($qry);
+          $rs->execute();
+          return $rs;
+     }
+
+     public function auth()
      {
           $headers = apache_request_headers();
 
-          if(isset($headers['Authorization'])) {
+          if (isset($headers['Authorization'])) {
                $token = trim(str_replace('Bearer ', '', $headers['Authorization']));
 
                try {
                     $decoded = JWT::decode($token, new Key($this->key, 'HS256'));
                     $payload = json_decode(json_encode((array) $decoded), true);
 
-                    $src  = '';
-                    $data = $payload['data'];
-
-                    if ($endpoint == 'me') {
-                         $src  = $data['id'];
-                    }
-
-                    $qry = "SELECT $ret
-                    FROM $tbl
-                    $join $wer $src $order";
-// echo $qry;
-                    $rs = $this->conn->prepare($qry);
-                    $rs->execute();
-                    return $rs;
+                    return $payload['data'];
 
                } catch (\Exception $e) {
-                    return ['Invalid token'];
+                    return false;
                }
           }
-
      }
 
 }

@@ -62,7 +62,7 @@ if (!empty($_POST)) {
 
 $_SESSION['login_type'] = 'profile';
 
-if (!isset($_SESSION['login'])) {
+if (!isset($_SESSION['token']) || !isset($_SESSION['login'])) {
     header('Location:/login');
     exit;
 }

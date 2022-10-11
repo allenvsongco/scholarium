@@ -48,7 +48,7 @@ class Auth extends API {
                return $this->send($rs);
 
           } else {
-               http_response_code(405);
+               return 'invalid method';
           }
      }
 
@@ -63,16 +63,16 @@ class Auth extends API {
           // params: ?id=USER_ID
 
           if ($this->method == 'GET') {
-               $tbl = $join = $order = '';
-               $ret = '*';
+               $ret  = '*';
+               $join = '';
 
                if (isset($this->verb)) {
-                    $ret  = "u.id ";
+                    $ret = "u.id";
 
                     switch ($this->verb) {
                          case '':
-                              $ret  .= ',username,first_name,last_name,is_admin';
-                              $join .= 'LEFT JOIN profile stp ON stp.id=u.id';
+                              $ret  .= ',username,first_name,middle_name,last_name,is_admin';
+                              $join .= 'LEFT JOIN profile p ON p.id=u.id';
                               break;
 
                          case 'profile':
@@ -80,8 +80,8 @@ class Auth extends API {
                          case 'employment':
                          case 'scholarship':
                          case 'sparta_profile':
-                              $join .= 'LEFT JOIN ' . $this->verb . ' stp ON stp.id=u.id';
-                              $ret  .= ',stp.*';
+                              $ret  .= ',p.*';
+                              $join .= 'LEFT JOIN ' . $this->verb . ' p ON p.id=u.id';
                               break;
                               
                         default:
@@ -90,21 +90,92 @@ class Auth extends API {
                     }
                }
 
-               $wer = 'WHERE u.id = ';
+               include_once 'config/DB.php';
+               include_once 'models/Connect.php';
+
+               $DB   = new DB();
+               $db   = $DB->connect('scholarium');
+               $post = new Connect($db);
+               $jwt  = $post->auth();
+// print_r($jwt);
+               if ($jwt) {
+                    $tbl  = 'user u';
+                    $wer  = 'WHERE u.id = ' . $jwt['id'];
+
+                    $qry = "SELECT $ret
+                    FROM $tbl
+                    $join
+                    $wer";
+
+                    $rs   = $post->crud($qry);
+                    return $this->send($rs);
+
+               } else {
+                    return 'invalid token';
+                    exit;
+               }
+
+          } elseif ($this->method == 'POST') {
+
+               if (isset($this->verb)) {
+                    switch ($this->verb) {
+                         case 'create':
+                              break;
+
+                         case 'update':
+                              break;
+
+                         case 'delete':
+                              break;
+
+                         case 'password':
+                              $comm = 'UPDATE';
+                              $tbl  = 'user';
+                              $add  = 'SET password=';
+                              $wer  = 'WHERE username=';
+                              break;
+
+                         default:
+                              return 'Invalid argument: ' . $this->verb;
+                              exit;
+                    }
+               }
 
                include_once 'config/DB.php';
                include_once 'models/Connect.php';
 
-               $tbl  = 'user u';
                $DB   = new DB();
                $db   = $DB->connect('scholarium');
                $post = new Connect($db);
-               $rs   = $post->auth('me', $ret, $tbl, $wer, $join, $order);
+               $jwt  = $post->auth();
 
-               return $this->send($rs);
+               if ($jwt) {
+                    $qry = "$comm $tbl $add $wer";
+// echo $qry;
+                    switch ($this->verb) {
+                         case 'create':
+                              break;
+
+                         case 'update':
+                              break;
+
+                         case 'delete':
+                              break;
+
+                         case 'password':
+                              $rs = $post->pass($this->request['user'], $this->request['pass'], $comm, $tbl, $add, $wer);
+                              break;
+                    }
+
+                    return $this->send($rs);
+
+               } else {
+                    return 'invalid token';
+                    exit;
+               }
 
           } else {
-               http_response_code(405);
+               return 'invalid method';
           }
      }
 
@@ -117,13 +188,13 @@ class Auth extends API {
           // /sparta_profile
 
           if ($this->method == 'GET') {
-               $tbl = $join = $order = '';
-               $ret = 'u.id,username,first_name,middle_name,last_name,status';
+               $ret  = 'u.*,p.first_name,p.middle_name,p.last_name';
+               $join = '';
 
                if (isset($this->verb)) {
                     switch ($this->verb) {
                          case '':
-                              $join .= 'LEFT JOIN profile stp ON stp.id=u.id';
+                              $join .= 'LEFT JOIN profile p ON p.id=u.id';
                               break;
 
                          default:
@@ -135,21 +206,33 @@ class Auth extends API {
                include_once 'config/DB.php';
                include_once 'models/Connect.php';
 
-               $tbl  = 'user u';
-               $order= 'ORDER BY id';
-
                $DB   = new DB();
                $db   = $DB->connect('scholarium');
                $post = new Connect($db);
-               $rs   = $post->auth('users', $ret, $tbl, '', $join, $order);
+               $jwt  = $post->auth();
 
-               return $this->send($rs);
+               if ($jwt) {
+                    $tbl  = 'user u';
+                    $order = 'ORDER BY u.id';
+
+                    $qry = "SELECT $ret
+                    FROM $tbl
+                    $join
+                    $order";
+
+                    $rs = $post->crud($qry);
+                    return $this->send($rs);
+
+               } else {
+                    return 'invalid token';
+               }
+
           } else {
-               http_response_code(405);
+               return 'invalid method';
           }
      }
 
-     public function info()
+     protected function info()
      {
           $arr['data'] = [array(
                'scho_full' => 'Scholarium',

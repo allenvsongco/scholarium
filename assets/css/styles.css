@@ -132,6 +132,14 @@ main>ul>li:last-child {
     margin: 0 auto;
 }
 
+#session-expired {
+    color: red;
+    position:fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
 /*---------- media ----------*/
 @media (max-width: 575px) {
     .container {

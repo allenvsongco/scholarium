@@ -11,13 +11,29 @@ define('ADMIN_ROOT', '/admin');
 define('IMG_PATH', '/assets/images/');
 define('API_PATH', 'https://scholarium.tmtg-clone.click/api/');
 
-if (isset($_SESSION['token']) && !isset($_SESSION['login'])) {
-	$data = authAPI('me');
+// if (isset($_SESSION['token']) && !empty($_SESSION)) {
+// 	print_r($_SESSION['token']);
+// 	echo $_SESSION['token']['expires'] . ' > ' . time() . '<br>';
+// }
 
-	$_SESSION['login']['id']       = $data[0]['id'];
-	$_SESSION['login']['username'] = $data[0]['username'];
-	$_SESSION['login']['name']     = $data[0]['first_name'] . ' ' . $data[0]['last_name'];
-	$_SESSION['login']['is_admin'] = $data[0]['is_admin'];
+if (isset($_SESSION['token']) ) {
+	if ($_SESSION['token']['expires'] > time()) {
+		$data = authAPI('me');
+
+		if ($data) {
+			$_SESSION['login']['id']       = $data[0]['id'];
+			$_SESSION['login']['username'] = $data[0]['username'];
+			$_SESSION['login']['name']     = $data[0]['first_name'] . ' ' . $data[0]['last_name'];
+			$_SESSION['login']['is_admin'] = $data[0]['is_admin'];
+
+		} else{
+			echo '<div id="session-expired" class="ct">INVALID RESPONSE</div>';
+		}
+
+	} else {
+		echo '<h3 class="ct" id="session-expired">SESSION EXPIRED</h3>';
+		echo '<META HTTP-EQUIV=Refresh CONTENT="0;URL=' . SCLR_ROOT . '/?logout">';
+	}
 }
 
 define('USER_ID', isset($_SESSION['login']['id']) ? $_SESSION['login']['id'] : null);
@@ -44,10 +60,11 @@ define('SELECTED', 'selected="selected"');
 define('CHECKED', 'checked="checked"');
 
 define('URI', substr(stristr($_SERVER['REQUEST_URI'], '?'), 1));
+// echo hash('sha256', ASIN);
 
 require('info.config.php');
 
-if( URI=='logout' ) {
+if (URI == 'logout') {
 	if( isset($_COOKIE[session_name()]) ) setcookie(session_name(), '', time()-3600, '/');
 	$_SESSION = array();
 	@session_destroy();
@@ -57,7 +74,7 @@ if( URI=='logout' ) {
 function set_kiu($post) {
 	$kdata = $idata = $udata = '';
 
-	$ints  = "/\bid\b|is_employed|first_timer|is_active|is_partner|is_admin|status/i";
+	$ints  = "/\bid\b|is_employed|first_timer|is_active|is_global|is_admin|is_partner|status/i";
 
 	foreach ($post as $k => $v) {
 		$v = trim_escape($v);
@@ -86,7 +103,7 @@ function authAPI($endpoint) {
 	$curl = curl_init();
 
 	curl_setopt_array($curl, array(
-		CURLOPT_URL => API_PATH . '/' . $endpoint,
+		CURLOPT_URL => API_PATH . trim($endpoint),
 		CURLOPT_RETURNTRANSFER => true,
 		CURLOPT_ENCODING => '',
 		CURLOPT_MAXREDIRS => 10,
@@ -95,23 +112,34 @@ function authAPI($endpoint) {
 		CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
 		CURLOPT_CUSTOMREQUEST => 'GET',
 		CURLOPT_HTTPHEADER => array(
-			'Authorization: Bearer ' . $_SESSION['token']
+			'Authorization: Bearer ' . $_SESSION['token']['token']
 		),
 	));
 
-	//Execute the cURL request. Convert response to json
-	$response = json_decode(curl_exec($curl), true);
+	$response = curl_exec($curl);
+// print_r($response);
 
-	//Check if any errors occured.
-	if (curl_errno($curl)) {
-		// throw the an Exception.
-		throw new Exception(curl_error($curl));
+	if ($response == '"invalid token"') {
+// echo '<br>fail<br>';
+		return false;
+
+	} else {
+// echo '<br>pass<br>';
+		//Execute the cURL request. Convert response to json
+		$response = json_decode($response, true);
+
+		//Check if any errors occured.
+		if (curl_errno($curl)) {
+			// throw the an Exception.
+			throw new Exception(curl_error($curl));
+		}
+
+		curl_close($curl);
+
+		//get the response.
+		return $response['data'];
+
 	}
-
-	curl_close($curl);
-
-	//get the response.
-	return $response['data'];
 
 }
 

@@ -12,6 +12,8 @@
  *   )
  */
 
+date_default_timezone_set('Asia/Manila');
+
 require __DIR__ . '/../vendor/autoload.php';
 use \Firebase\JWT\JWT;
 use \Firebase\JWT\Key;
@@ -31,8 +33,7 @@ class Connect {
           $this->key  = $key;
      }
 
-     public function login($un, $pw)
-     {
+     public function login($un, $pw) {
           $password = sha1($un . $this->asin . $pw);
 
           $ret = "id,username,email";
@@ -63,6 +64,10 @@ class Connect {
                     ]
                ];
 
+               $qry = "UPDATE user SET last_login=NOW() WHERE username='$un'";
+               $rs = $this->conn->prepare($qry);
+               $rs->execute();
+
                $jwt = JWT::encode($payload, $this->key, 'HS256');
                return [
                     'token' => $jwt,
@@ -75,26 +80,42 @@ class Connect {
 
      }
 
-     public function pass($un, $pw, $comm, $tbl, $add, $wer)
-     {
-          $pass = sha1($un . $this->asin . $pw);
-          $qry = "$comm $tbl $add '$pass' $wer '$un'";
+     public function pass($user, $post) {
+          $old = $post['oldpw'];
+          $new = $post['newpw'];
 
-          $rs = $this->conn->prepare($qry);
-          $rs->execute();
-          return ['success'=>'password changed'];
+          $pass = sha1($user . $this->asin . $old);
+          $test = "SELECT COUNT(id) pass FROM user WHERE username='" . $user . "' AND password='$pass'";
+          $tst  = $this->conn->prepare($test);
+          $tst->execute();
+          $test = $tst->fetch();
+
+          if ($test['pass']) {
+               $pass = sha1($user . $this->asin . $new);
+               $qry = "UPDATE user SET password='$pass' WHERE username='$user'";
+
+               $rs = $this->conn->prepare($qry);
+               $rs->execute();
+               return ['success'=>'password changed'];
+
+          } else {
+               return ['error'=>'invalid username or password'];
+          }
      }
 
-     public function crud($qry)
-     {
+     public function getHash($h1, $h2) {
+          return sha1($h1 . $this->asin . $h2);
+     }
+
+     public function crud($qry) {
 // echo $qry;
           $rs = $this->conn->prepare($qry);
           $rs->execute();
+          // $last_id = $this->conn->lastInsertId();
           return $rs;
      }
 
-     public function auth()
-     {
+     public function auth() {
           $headers = apache_request_headers();
 
           if (isset($headers['Authorization'])) {

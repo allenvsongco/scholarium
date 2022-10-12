@@ -1,8 +1,7 @@
 <?php
 class Auth extends API {
 
-     public function __construct($request, $origin)
-     {
+     public function __construct($request, $origin) {
           parent::__construct($request);
 
           $auth_type = strstr($_SERVER['HTTP_AUTHORIZATION'], ' ', 1);
@@ -28,14 +27,13 @@ class Auth extends API {
 
                     if (array_key_exists($_SERVER['PHP_AUTH_PW'], $arrCoid) && $arrCoid[$this->apikey] == $_SERVER['PHP_AUTH_USER']) {
                     } else
-                         throw new Exception('Unauthorized access');
+                         throw new Exception('unauthorized access');
                }
           }
 
      }
 
-     protected function login()
-     {
+     protected function login() {
           if ($this->method == 'POST') {
                include_once 'config/DB.php';
                include_once 'models/Connect.php';
@@ -52,193 +50,256 @@ class Auth extends API {
           }
      }
 
-     protected function me()
-     {
+     protected function me() {
           // /profile
           // /education
           // /employment
           // /scholarship
           // /sparta_profile
 
-          // params: ?id=USER_ID
+          include_once 'config/DB.php';
+          include_once 'models/Connect.php';
 
-          if ($this->method == 'GET') {
-               $ret  = '*';
-               $join = '';
+          $DB   = new DB();
+          $db   = $DB->connect('scholarium');
+          $post = new Connect($db);
+          $jwt  = $post->auth();
 
-               if (isset($this->verb)) {
-                    $ret = "u.id";
+          if ($jwt) {
+               // print_r($jwt);
+               switch ($this->method) {
+                    case 'GET':
+                         $ret  = '*';
+                         $join = '';
 
-                    switch ($this->verb) {
-                         case '':
-                              $ret  .= ',username,first_name,middle_name,last_name,is_admin';
-                              $join .= 'LEFT JOIN profile p ON p.id=u.id';
-                              break;
+                         if (isset($this->verb)) {
+                              $ret = "u.id";
 
-                         case 'profile':
-                         case 'education':
-                         case 'employment':
-                         case 'scholarship':
-                         case 'sparta_profile':
-                              $ret  .= ',p.*';
-                              $join .= 'LEFT JOIN ' . $this->verb . ' p ON p.id=u.id';
-                              break;
-                              
-                        default:
-                              return 'Invalid argument: ' . $this->verb;
-                              exit;
+                              switch ($this->verb) {
+                                   case '':
+                                        $ret  .= ',username,first_name,middle_name,last_name,is_admin';
+                                        $join .= 'LEFT JOIN profile p ON p.id=u.id';
+                                        break;
+
+                                   case 'profile':
+                                   case 'education':
+                                   case 'employment':
+                                   case 'scholarship':
+                                   case 'sparta_profile':
+                                        $ret  .= ',p.*';
+                                        $join .= 'LEFT JOIN ' . $this->verb . ' p ON p.id=u.id';
+                                        break;
+                                        
+                              default:
+                                        return 'Invalid argument: ' . $this->verb;
+                                        exit;
+                              }
+                         }
+
+                         $tbl  = 'user u';
+                         $wer  = 'WHERE u.id = ' . $jwt['id'];
+
+                         $qry = "SELECT $ret
+                         FROM $tbl
+                         $join
+                         $wer";
+
+                         $rs   = $post->crud($qry);
+                         return $this->send($rs);
+                         // end me GET
+
+                    case 'POST':
+                         if (isset($this->verb)) {
+                              switch ($this->verb) {
+                                   case 'update':
+                                   case 'password':
+                                        break;
+
+                                   default:
+                                        return 'Invalid argument: ' . $this->verb;
+                                        exit;
+                              }
+                         }
+
+                         switch ($this->verb) {
+                              case 'update':
+                                   break;
+
+                              case 'password':
+                                   $rs = $post->pass($jwt['username'], $this->request);
+                                   break;
+                         }
+
+                         return $this->send($rs);
+                         // end me POST
+
+                    default:
+                         return 'invalid method';
+                         exit;
+               }
+
+          } else {
+               return 'invalid token';
+               exit;
+          }
+          // end me
+     }
+
+     protected function users() {
+          include_once 'config/DB.php';
+          include_once 'models/Connect.php';
+
+          $DB   = new DB();
+          $db   = $DB->connect('scholarium');
+          $post = new Connect($db);
+          $jwt  = $post->auth();
+
+          if ($jwt) {
+               switch ($this->method) {
+                    case 'GET':
+                         $ret  = 'u.*,p.first_name,p.middle_name,p.last_name';
+                         $join = '';
+
+                         if (isset($this->verb)) {
+                              switch ($this->verb) {
+                                   case '':
+                                        $join .= 'LEFT JOIN profile p ON p.id=u.id';
+                                        break;
+
+                                   default:
+                                        return 'Invalid argument: ' . $this->verb;
+                                        exit;
+                              }
+                         }
+
+                         $tbl  = 'user u';
+                         $order = 'ORDER BY u.id';
+
+                         $qry = "SELECT $ret
+                         FROM $tbl
+                         $join
+                         $order";
+
+                         $rs = $post->crud($qry);
+                         return $this->send($rs);
+
+                         // end users GET
+
+                    case 'POST':
+
+                         if (isset($this->verb)) {
+                              switch ($this->verb) {
+                                   case 'update':
+                                        break;
+
+                                   case 'delete':
+                                        break;
+
+                                   default:
+                                        return 'Invalid argument: ' . $this->verb;
+                                        exit;
+                              }
+                         }
+
+                         // switch ($this->verb) {
+                         //      case 'create':
+                         //      case 'update':
+                         //      case 'delete':
+                         //           $rs = $post->crud($qry);
+                         //           break;
+                         // }
+
+                         // return $this->send($rs);
+
+                         // end users POST
+
+                    default:
+                         return 'Invalid method: ' . $this->method;
+                         exit;
+               }
+
+          } else {
+               return 'invalid token';
+               exit;
+          }
+
+          // end users
+     }
+
+     protected function basic() {
+          $rs = [];
+
+          switch ($this->method) {
+               case 'GET';
+                    if (isset($this->verb)) {
+                         switch ($this->verb) {
+                              case 'info':
+                                   $rs = array(
+                                        'scho_full' => 'Scholarium',
+                                        );
+                                   break;
+
+                              default:
+                                   return 'Invalid argument: ' . $this->verb;
+                                   exit;
+                         }
                     }
-               }
+                    break;
+                    // end basic GET
 
-               include_once 'config/DB.php';
-               include_once 'models/Connect.php';
-
-               $DB   = new DB();
-               $db   = $DB->connect('scholarium');
-               $post = new Connect($db);
-               $jwt  = $post->auth();
-// print_r($jwt);
-               if ($jwt) {
-                    $tbl  = 'user u';
-                    $wer  = 'WHERE u.id = ' . $jwt['id'];
-
-                    $qry = "SELECT $ret
-                    FROM $tbl
-                    $join
-                    $wer";
-
-                    $rs   = $post->crud($qry);
-                    return $this->send($rs);
-
-               } else {
-                    return 'invalid token';
-                    exit;
-               }
-
-          } elseif ($this->method == 'POST') {
-
-               if (isset($this->verb)) {
+               case 'POST':
                     switch ($this->verb) {
                          case 'create':
-                              break;
+                              include_once 'config/DB.php';
+                              include_once 'models/Connect.php';
 
-                         case 'update':
-                              break;
+                              $DB   = new DB();
+                              $db   = $DB->connect('scholarium');
+                              $post = new Connect($db);
 
-                         case 'delete':
-                              break;
+                              $usercheck = $post->crud("SELECT username FROM user WHERE username='". $this->request['username']."'");
+                              $usercheck = $usercheck->fetch();
 
-                         case 'password':
-                              $comm = 'UPDATE';
-                              $tbl  = 'user';
-                              $add  = 'SET password=';
-                              $wer  = 'WHERE username=';
+                              $mailcheck = $post->crud("SELECT email FROM user WHERE email='" . $this->request['email'] . "'");
+                              $mailcheck = $mailcheck->fetch();
+
+                              if (!empty($usercheck)) {
+                                   return ['error' => 'username exists'];
+                                   exit;
+
+                              } elseif (!empty($mailcheck)) {
+                                   return ['error' => 'email exists'];
+                                   exit;
+
+                              } else {
+                                   foreach ($this->request as $k=>$v) $$k = $v;
+
+                                   $hash = $post->getHash($username, $email);
+
+                                   $post->crud("INSERT IGNORE INTO user (id,username,email,date_joined,hash) VALUES('','$username','$email',NOW(),'$hash')");
+                                   
+                                   $rs = $post->crud("SELECT id FROM user ORDER BY id DESC LIMIT 1")->fetch();
+                                   $last_id = $rs['id'];
+
+                                   $post->crud("INSERT IGNORE INTO profile (id,first_name,middle_name,last_name,last_modified) VALUES($last_id,'$first_name','$middle_name','$last_name',NOW())");
+
+                                   return $this->send(['success' => 'user account created']);
+                              }
                               break;
 
                          default:
                               return 'Invalid argument: ' . $this->verb;
                               exit;
                     }
-               }
+                    break;
+                    // end basic POST
 
-               include_once 'config/DB.php';
-               include_once 'models/Connect.php';
-
-               $DB   = new DB();
-               $db   = $DB->connect('scholarium');
-               $post = new Connect($db);
-               $jwt  = $post->auth();
-
-               if ($jwt) {
-                    $qry = "$comm $tbl $add $wer";
-// echo $qry;
-                    switch ($this->verb) {
-                         case 'create':
-                              break;
-
-                         case 'update':
-                              break;
-
-                         case 'delete':
-                              break;
-
-                         case 'password':
-                              $rs = $post->pass($this->request['user'], $this->request['pass'], $comm, $tbl, $add, $wer);
-                              break;
-                    }
-
-                    return $this->send($rs);
-
-               } else {
-                    return 'invalid token';
+               default:
+                    return 'Invalid method: ' . $this->method;
                     exit;
-               }
-
-          } else {
-               return 'invalid method';
           }
-     }
 
-     protected function users()
-     {
-          // /profile
-          // /education
-          // /employment
-          // /scholarship
-          // /sparta_profile
-
-          if ($this->method == 'GET') {
-               $ret  = 'u.*,p.first_name,p.middle_name,p.last_name';
-               $join = '';
-
-               if (isset($this->verb)) {
-                    switch ($this->verb) {
-                         case '':
-                              $join .= 'LEFT JOIN profile p ON p.id=u.id';
-                              break;
-
-                         default:
-                              return 'Invalid argument: ' . $this->verb;
-                              exit;
-                    }
-               }
-
-               include_once 'config/DB.php';
-               include_once 'models/Connect.php';
-
-               $DB   = new DB();
-               $db   = $DB->connect('scholarium');
-               $post = new Connect($db);
-               $jwt  = $post->auth();
-
-               if ($jwt) {
-                    $tbl  = 'user u';
-                    $order = 'ORDER BY u.id';
-
-                    $qry = "SELECT $ret
-                    FROM $tbl
-                    $join
-                    $order";
-
-                    $rs = $post->crud($qry);
-                    return $this->send($rs);
-
-               } else {
-                    return 'invalid token';
-               }
-
-          } else {
-               return 'invalid method';
-          }
-     }
-
-     protected function info()
-     {
-          $arr['data'] = [array(
-               'scho_full' => 'Scholarium',
-          )];
-
-          return $arr;
+          // end basic
      }
 }
 ?>

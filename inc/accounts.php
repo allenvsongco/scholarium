@@ -1,7 +1,7 @@
 <?php
 $x = '';
 
-$data = authAPI('users');
+$data = authAPI('admin/users/list');
 
 $x .= '<tr>';
 $x .= '<th>Username</th>';
@@ -21,6 +21,9 @@ if ($data) {
         $x .= '<td>' . ($status ? '<ion-icon name="checkmark-outline"></ion-icon>' : '') . '</td>';
         $x .= '</tr>';
     }
+
+} else {
+    echo '<div id="session-expired" class="ct">api error</div>';
 }
 
 unset($_SESSION['account_id']);

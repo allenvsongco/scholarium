@@ -42,11 +42,24 @@ if (isset($new) && $new) {
 
 } else {
 
-    $data = authAPI('me/' . (TAB == '' ? 'profile' : TAB));
+    switch (BASE) {
+        case 'profile':
+            $call = 'me/' . (TAB == '' ? 'profile' : TAB);
+            break;
+
+        case 'accounts':
+            $call = 'admin/users/' . (TAB == '' ? 'profile' : TAB) . '?id=' . $user;
+            break;
+    }
+
+    $data = authAPI($call);
 
     if (isset($data[0])) {
         $x .= populateForm($data[0]);
         $changepass = (TAB == '' || TAB == 'profile' ? '<a href="password" class="btn">Change Password</a>' : '');
+
+    } else {
+        echo '<h3 class="ct" id="session-expired">api error</h3>';
     }
 
 }

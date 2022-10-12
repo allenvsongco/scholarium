@@ -36,7 +36,7 @@ class Connect {
      public function login($un, $pw) {
           $password = sha1($un . $this->asin . $pw);
 
-          $ret = "id,username,email";
+          $ret = "id,username,email,is_global,is_admin,is_partner";
           $qry = "SELECT $ret FROM user WHERE username='$un' AND password='$password' AND status=1";
           $rs = $this->conn->prepare($qry);
           $rs->execute();
@@ -60,7 +60,10 @@ class Connect {
                     'data' => [
                          'id' => $id,
                          'username' => $username,
-                         'email' => $email
+                         'email' => $email,
+                         'is_global' => $is_global,
+                         'is_admin' => $is_admin,
+                         'is_partner' => $is_partner,
                     ]
                ];
 

@@ -27,11 +27,11 @@ if (isset($_SESSION['token']) ) {
 			$_SESSION['login']['is_admin'] = $data[0]['is_admin'];
 
 		} else{
-			echo '<div id="session-expired" class="ct">INVALID RESPONSE</div>';
+			echo '<div id="session-expired" class="ct">api error</div>';
 		}
 
 	} else {
-		echo '<h3 class="ct" id="session-expired">SESSION EXPIRED</h3>';
+		echo '<div id="session-expired" class="ct">session expired</div>';
 		echo '<META HTTP-EQUIV=Refresh CONTENT="0;URL=' . SCLR_ROOT . '/?logout">';
 	}
 }

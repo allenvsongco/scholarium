@@ -297,9 +297,17 @@ class Auth extends API {
 
                                                        case 'delete':
                                                             if (isset($this->request['id'])) {
-                                                                 $qry = "DELETE FROM user WHERE id=" . $this->request['id'];
+                                                                 $qry = "SELECT id FROM user WHERE id=" . $this->request['id'];
                                                                  $rs = $post->crud($qry);
-                                                                 return $this->send(['success' => 'user account deleted']);
+
+                                                                 if ($rs->rowCount() > 0) {
+                                                                      $qry = "DELETE FROM user WHERE id=" . $this->request['id'];
+                                                                      $rs = $post->crud($qry);
+                                                                      return $this->send(['success' => 'user account deleted']);
+
+                                                                 } else {
+                                                                      return $this->send(['error' => 'invalid id']);
+                                                                 }
 
                                                             } else {
                                                                  return 'invalid argument';

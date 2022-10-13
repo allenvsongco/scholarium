@@ -105,16 +105,49 @@ class Connect {
           }
      }
 
+     public function set_kiu($post) {
+          $kdata = $idata = $udata = '';
+
+          // $ints  = "/\bid\b|is_employed|first_timer|is_active|is_global|is_admin|is_partner|status/i";
+
+          foreach ($post as $k => $v) {
+               // $v = trim_escape($v);
+               $$k = $v;
+
+               $kdata .= " $k,";
+
+               // if ($k == 'last_modified') {
+               //      $v = date(TMDSET);
+               // }
+
+               // $vvv = preg_match($ints, $k) ? $v : "'$v'";
+               $vvv = "'$v'";
+
+               $idata .= "$vvv,";
+               $udata .= $k . "=$vvv,";
+          }
+
+          $kdata = substr($kdata, 0, -1);
+          $idata = substr($idata, 0, -1);
+          $udata = substr($udata, 0, -1);
+
+          return array($kdata, $idata, $udata);
+     }
+
      public function getHash($h1, $h2) {
           return sha1($h1 . $this->asin . $h2);
      }
 
-     public function crud($qry) {
+     public function crud($qry, $return=0) {
 // echo $qry;
           $rs = $this->conn->prepare($qry);
           $rs->execute();
-          // $last_id = $this->conn->lastInsertId();
-          return $rs;
+
+          if($return) {
+               $this->conn->lastInsertId();
+          } else {
+               return $rs;
+          }
      }
 
      public function auth() {

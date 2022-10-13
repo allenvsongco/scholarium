@@ -25,8 +25,7 @@ class Auth extends API {
                     } else
                          throw new Exception('unauthorized access');
                }
-          }
-
+          } // end basic auth
      }
 
      protected function login() {
@@ -64,7 +63,6 @@ class Auth extends API {
 
           // test jwt token
           if ($jwt) {
-               // print_r($jwt);
                switch ($this->method) {
                     case 'GET':
                          $ret  = '*';
@@ -72,7 +70,7 @@ class Auth extends API {
 
                          if (isset($this->verb)) {
                               $ret = "u.id";
-                                                       // echo $this->verb;
+
                               switch ($this->verb) {
                                    case '':
                                         $ret  .= ',username,first_name,middle_name,last_name,is_global,is_admin,is_partner';
@@ -88,7 +86,7 @@ class Auth extends API {
                                         $join .= 'LEFT JOIN ' . $this->verb . ' p ON p.id=u.id';
                                         break;
                                         
-                              default:
+                                   default:
                                         return 'invalid argument: ' . $this->verb;
                                         exit;
                               }
@@ -109,23 +107,48 @@ class Auth extends API {
                     case 'POST':
                          if (isset($this->verb)) {
                               switch ($this->verb) {
-                                   case 'update':
+                                   case 'user':
+                                   case 'profile':
+                                   case 'education':
+                                   case 'employment':
+                                   case 'scholarship':
+                                   case 'sparta_profile':
+                                        if (!empty($this->args)) {
+                                             $arg = (!empty($this->args[0])) ? $this->args[0] : '';
+
+                                             switch ($arg) {
+                                                  case 'update':
+                                                       if (count($this->request) > 0) {
+                                                            $this->request['id'] = $jwt['id'];
+                                                            $tbl = $this->verb;
+
+                                                            list($kdata, $idata, $udata) = $post->set_kiu($this->request);
+                                                            $qry = "INSERT INTO $tbl ($kdata) VALUES($idata) ON DUPLICATE KEY UPDATE $udata";
+
+                                                            $rs = $post->crud($qry, 1);
+                                                            return $this->send(['success' => 'user account updated']);
+                                                       }
+                                                       break;
+
+                                                  default:
+                                                       return 'invalid argument: ' . $this->verb;
+                                                       exit;
+                                             }
+                                        }
+                                        break;
+
                                    case 'password':
+                                        $rs = $post->pass($jwt['username'], $this->request);
                                         break;
 
                                    default:
                                         return 'invalid argument: ' . $this->verb;
                                         exit;
                               }
-                         }
 
-                         switch ($this->verb) {
-                              case 'update':
-                                   break;
-
-                              case 'password':
-                                   $rs = $post->pass($jwt['username'], $this->request);
-                                   break;
+                         } else {
+                              return 'verb missing';
+                              exit;
                          }
 
                          return $this->send($rs);

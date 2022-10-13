@@ -11,19 +11,15 @@ class Auth extends API {
                     header('WWW-Authenticate: Basic realm="Scholarium"');
                     header('HTTP/1.0 401 Unauthorized');
                     echo 'Authentication FAILED';
-
                     exit;
 
                } else {
 
+                    require_once 'config/asin.config';
+
                     list($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) = explode(':', base64_decode(substr($_SERVER['HTTP_AUTHORIZATION'], 6)));
                     $this->coid   = $_SERVER['PHP_AUTH_USER'];
                     $this->apikey = $_SERVER['PHP_AUTH_PW'];
-
-                    $arrCoid = array(
-                         'tujyBpbgtum3xcctFvXZgr4ZnaRsddVRpvkwJuq8B3KEwfd4BZQtrRaj5r4vdtDm' => 'TMTG',
-                         'b3vg5vz5t6QJqRccTTysUtaYzF9bmUUrZXDNP54hxyF3Nr6azNdmAHXRrYjSQXA5' => 'Partner'
-                    );
 
                     if (array_key_exists($_SERVER['PHP_AUTH_PW'], $arrCoid) && $arrCoid[$this->apikey] == $_SERVER['PHP_AUTH_USER']) {
                     } else
@@ -48,6 +44,7 @@ class Auth extends API {
           } else {
                return 'invalid method';
           }
+     // end login endpoint
      }
 
      protected function me() {
@@ -65,6 +62,7 @@ class Auth extends API {
           $post = new Connect($db);
           $jwt  = $post->auth();
 
+          // test jwt token
           if ($jwt) {
                // print_r($jwt);
                switch ($this->method) {
@@ -74,10 +72,10 @@ class Auth extends API {
 
                          if (isset($this->verb)) {
                               $ret = "u.id";
-// echo $this->verb;
+                                                       // echo $this->verb;
                               switch ($this->verb) {
                                    case '':
-                                        $ret  .= ',username,first_name,middle_name,last_name,is_admin';
+                                        $ret  .= ',username,first_name,middle_name,last_name,is_global,is_admin,is_partner';
                                         $join .= 'LEFT JOIN profile p ON p.id=u.id';
                                         break;
 
@@ -106,7 +104,7 @@ class Auth extends API {
 
                          $rs   = $post->crud($qry);
                          return $this->send($rs);
-                         // end me GET
+                    // end me GET
 
                     case 'POST':
                          if (isset($this->verb)) {
@@ -131,19 +129,19 @@ class Auth extends API {
                          }
 
                          return $this->send($rs);
-                         // end me POST
+                    // end me POST
 
                     default:
                          return 'invalid method';
                          exit;
-               }
+               } // end switch method
 
           } else {
                return 'invalid token';
                exit;
-          }
-          // end me
-     }
+          } // end test jwt token
+
+     } // end me endpoint
 
      protected function admin() {
           // /admin/users
@@ -157,122 +155,123 @@ class Auth extends API {
           $post = new Connect($db);
           $jwt  = $post->auth();
 
-          if ($jwt && $jwt['is_admin']) {
-               switch ($this->method) {
-                    case 'GET':
-                         $ret = $join = $wer = '';
+          // test jwt token
+          if ($jwt) {
 
-                         if (isset($this->verb)) {
-                              switch ($this->verb) {
-                                   case 'users':
+               // test user is_admin
+               if ($jwt['is_admin']) {
+                    switch ($this->method) {
+                         case 'GET':
+                              $ret = $join = $wer = '';
 
-                                        if (!empty($this->args)) {
-                                             $arg = (!empty($this->args[0])) ? $this->args[0] : '';
+                              if (isset($this->verb)) {
+                                   switch ($this->verb) {
+                                        case 'users':
 
-                                             switch ($arg) {
-                                                  case 'list':
-                                                       $ret  .= 'u.*,p.first_name,p.middle_name,p.last_name';
-                                                       $join .= 'LEFT JOIN profile p ON p.id=u.id';
+                                             if (!empty($this->args)) {
+                                                  $arg = (!empty($this->args[0])) ? $this->args[0] : '';
 
-                                                       if (count($this->request) > 1) {
-                                                            $wer = 'WHERE ';
+                                                  switch ($arg) {
+                                                       case 'list':
+                                                            $ret  .= 'u.*,p.first_name,p.middle_name,p.last_name';
+                                                            $join .= 'LEFT JOIN profile p ON p.id=u.id';
 
-                                                            foreach ($this->request as $k => $v) {
-                                                                 if ($k != 'request') {
-                                                                      $wer .= "$k='$v' AND ";
+                                                            if (count($this->request) > 1) {
+                                                                 $wer = 'WHERE ';
+
+                                                                 foreach ($this->request as $k => $v) {
+                                                                      if ($k != 'request') {
+                                                                           $wer .= "$k='$v' AND ";
+                                                                      }
                                                                  }
+                                                                 $wer = substr($wer, 0, -4);
                                                             }
-                                                            $wer = substr($wer, 0, -4);
-                                                       }
-                                                       break;
+                                                            break;
 
-                                                  case 'profile':
-                                                  case 'education':
-                                                  case 'employment':
-                                                  case 'scholarship':
-                                                  case 'sparta_profile':
-                                                       if (isset($this->request['id'])) {
-                                                            $ret  .= 'u.id,p.*';
-                                                            $join .= "LEFT JOIN $arg p ON p.id=u.id";
-                                                            $wer   = 'WHERE u.id = ' . $this->request['id'];
+                                                       case 'profile':
+                                                       case 'education':
+                                                       case 'employment':
+                                                       case 'scholarship':
+                                                       case 'sparta_profile':
+                                                            if (isset($this->request['id'])) {
+                                                                 $ret  .= 'u.id,p.*';
+                                                                 $join .= "LEFT JOIN $arg p ON p.id=u.id";
+                                                                 $wer   = 'WHERE u.id = ' . $this->request['id'];
 
-                                                       } else {
-                                                            return 'argument parameter: id';
+                                                            } else {
+                                                                 return 'argument parameter: id';
+                                                                 exit;
+                                                            }
+                                                            break;
+
+                                                       default:
+                                                            return 'argument missing';
                                                             exit;
-                                                       }
-                                                       break;
+                                                  }
 
-                                                  default:
-                                                       return 'argument missing';
-                                                       exit;
+                                             } else {
+                                                  return 'argument missing';
+                                                  exit;
                                              }
+                                             break;
 
-                                        } else {
-                                             return 'argument missing';
+                                        default:
+                                             return 'invalid argument: ' . $this->verb;
                                              exit;
-                                        }
-                                        break;
-
-                                   default:
-                                        return 'invalid argument: ' . $this->verb;
-                                        exit;
+                                   }
                               }
-                         }
 
-                         $tbl  = 'user u';
-                         $order = 'ORDER BY u.id';
+                              $tbl  = 'user u';
+                              $order = 'ORDER BY u.id';
 
-                         $qry = "SELECT $ret
-                         FROM $tbl
-                         $join
-                         $wer
-                         $order";
-// echo $qry;
-                         $rs = $post->crud($qry);
-                         return $this->send($rs);
+                              $qry = "SELECT $ret
+                              FROM $tbl
+                              $join
+                              $wer
+                              $order";
+                         // echo $qry;
+                              $rs = $post->crud($qry);
+                              return $this->send($rs);
 
                          // end admin GET
 
-                    case 'POST':
+                         case 'POST':
 
-                         if (isset($this->verb)) {
-                              switch ($this->verb) {
-                                   case 'update':
-                                        break;
+                              if (isset($this->verb)) {
+                                   switch ($this->verb) {
+                                        case 'update':
+                                             break;
 
-                                   case 'delete':
-                                        break;
+                                        case 'delete':
+                                             break;
 
-                                   default:
-                                        return 'invalid argument: ' . $this->verb;
-                                        exit;
+                                        default:
+                                             return 'invalid argument: ' . $this->verb;
+                                             exit;
+                                   }
                               }
-                         }
-
-                         // switch ($this->verb) {
-                         //      case 'create':
-                         //      case 'update':
-                         //      case 'delete':
-                         //           $rs = $post->crud($qry);
-                         //           break;
-                         // }
-
-                         // return $this->send($rs);
+                              // return $this->send($rs);
 
                          // end admin POST
 
-                    default:
-                         return 'invalid method: ' . $this->method;
-                         exit;
+                         default:
+                              return 'invalid method: ' . $this->method;
+                              exit;
+
+                    } // end switch method
+
+               } else {
+                    return 'unauthorized user';
+                    exit;
                }
+               // end test user is_admin
 
           } else {
                return 'invalid token';
                exit;
-          }
+          } // end basic method
 
-          // end admin
-     }
+     } // end admin endpoint
 
      protected function basic() {
           $rs = [];
@@ -280,17 +279,25 @@ class Auth extends API {
           switch ($this->method) {
                case 'GET';
                     if (isset($this->verb)) {
+
                          switch ($this->verb) {
                               case 'info':
                                    $rs = array(
-                                        'scho_full' => 'Scholarium',
+                                        'full' => 'Scholarium',
+                                        'domain' => 'scholarium.io',
                                         );
+
+                                   return $this->send($rs);
                                    break;
 
                               default:
                                    return 'invalid argument: ' . $this->verb;
                                    exit;
                          }
+
+                    } else {
+                         return 'argument missing';
+                         exit;
                     }
                     break;
                     // end basic GET
@@ -345,9 +352,9 @@ class Auth extends API {
                default:
                     return 'invalid method: ' . $this->method;
                     exit;
-          }
 
-          // end basic
-     }
+          } // end basic method
+
+     } // end basic endpoint
 }
 ?>

@@ -24,9 +24,8 @@ class Connect {
      protected $conn;
      protected $key;
 
-     public function __construct($db)
-     {
-          include_once 'config/asin.config';
+     public function __construct($db) {
+          require 'config/asin.config';
 
           $this->conn = $db;
           $this->asin = $asin;

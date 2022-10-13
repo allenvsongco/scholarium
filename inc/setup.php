@@ -36,6 +36,8 @@ if (isset($_SESSION['token']) ) {
 	}
 }
 
+require('info.config.php');
+
 define('USER_ID', isset($_SESSION['login']['id']) ? $_SESSION['login']['id'] : null);
 define('USER_NAME', isset($_SESSION['login']['username']) ? $_SESSION['login']['username'] : null);
 define('USER_ISADMIN', isset($_SESSION['login']['is_admin']) ? $_SESSION['login']['is_admin'] : null);
@@ -50,7 +52,6 @@ define('DATFUL', 'F d, Y');
 define('DATSET', 'M d, Y');
 define('TIMSET', 'h:ia');
 define('ZERO', '0000-00-00 00:00:00');
-define('ASIN', 'AvTFQjVqsZ3f55oF');
 define('NOREPLY', 'donotreply@scholarium.io');
 
 define('DIV_CLEAR', '<div class="clear"></div>');
@@ -61,8 +62,6 @@ define('CHECKED', 'checked="checked"');
 
 define('URI', substr(stristr($_SERVER['REQUEST_URI'], '?'), 1));
 // echo hash('sha256', ASIN);
-
-require('info.config.php');
 
 if (URI == 'logout') {
 	if( isset($_COOKIE[session_name()]) ) setcookie(session_name(), '', time()-3600, '/');

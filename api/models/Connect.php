@@ -77,7 +77,7 @@ class Connect {
                ];
 
           } else {
-               return false;
+               return ['error' => 'invalid username or password'];
           };
 
      }
@@ -102,6 +102,29 @@ class Connect {
 
           } else {
                return ['error'=>'invalid username or password'];
+          }
+     }
+
+     public function reset_pass($user)
+     {
+          $qry = "SELECT id,username,hash FROM user WHERE username='" . $user . "'";
+          $rs = $this->conn->prepare($qry);
+          $rs->execute();
+          $r = $rs->fetch();
+
+          if ($rs->rowCount() > 0) {
+               $pass = sha1($r['username'] . $this->asin . sha1( $r['hash']));
+               $qry = "UPDATE user SET password='$pass' WHERE id='" . $r['id'] . "'";
+
+               $rs = $this->conn->prepare($qry);
+               $rs->execute();
+               return [
+                    'success' => 'password reset',
+                    'new_pass' => sha1($r['hash'])
+               ];
+
+          } else {
+               return ['error' => 'invalid username'];
           }
      }
 

@@ -180,7 +180,6 @@ class Auth extends API {
 
           // test jwt token
           if ($jwt) {
-
                // test user is_admin
                if ($jwt['is_admin']) {
                     switch ($this->method) {
@@ -193,6 +192,7 @@ class Auth extends API {
 
                                              if (!empty($this->args)) {
                                                   $arg = (!empty($this->args[0])) ? $this->args[0] : '';
+                                                  $arg1= (!empty($this->args[1])) ? $this->args[1] : '';
 
                                                   switch ($arg) {
                                                        case 'list':
@@ -211,6 +211,7 @@ class Auth extends API {
                                                             }
                                                             break;
 
+                                                       case 'user':
                                                        case 'profile':
                                                        case 'education':
                                                        case 'employment':
@@ -252,29 +253,83 @@ class Auth extends API {
                               $join
                               $wer
                               $order";
-                         // echo $qry;
+                                                       // echo $qry;
                               $rs = $post->crud($qry);
                               return $this->send($rs);
-
+                              break;
                          // end admin GET
 
                          case 'POST':
-
                               if (isset($this->verb)) {
                                    switch ($this->verb) {
-                                        case 'update':
-                                             break;
+                                        case 'users':
+                                             if (!empty($this->args)) {
+                                                  $arg = (!empty($this->args[0])) ? $this->args[0] : '';
+                                                  $arg1= (!empty($this->args[1])) ? $this->args[1] : '';
 
-                                        case 'delete':
+                                                  switch ($arg) {
+                                                       case 'user':
+                                                       case 'profile':
+                                                       case 'education':
+                                                       case 'employment':
+                                                       case 'scholarship':
+                                                       case 'sparta_profile':
+                                                           if (!empty($this->args[1])) {
+                                                                 switch ($arg1) {
+                                                                      case 'update':
+                                                                           $tbl = $arg;
+
+                                                                           if (count($this->request) > 0) {
+                                                                                list($kdata, $idata, $udata) = $post->set_kiu($this->request);
+                                                                                $qry = "INSERT INTO $tbl ($kdata) VALUES($idata) ON DUPLICATE KEY UPDATE $udata";
+
+                                                                                $rs = $post->crud($qry, 1);
+                                                                                return $this->send(['success' => 'user account updated']);
+                                                                           }
+                                                                           break;
+
+                                                                      default:
+                                                                           return 'invalid argument';
+                                                                           exit;
+                                                                 }
+                                                            }
+                                                            break;
+
+                                                       case 'delete':
+                                                            if (isset($this->request['id'])) {
+                                                                 $qry = "DELETE FROM user WHERE id=" . $this->request['id'];
+                                                                 $rs = $post->crud($qry);
+                                                                 return $this->send(['success' => 'user account deleted']);
+
+                                                            } else {
+                                                                 return 'invalid argument';
+                                                            }
+                                                            break;
+
+                                                       case 'reset_pass':
+                                                            if (isset($this->request['username'])) {
+                                                                 $rs = $post->reset_pass($this->request['username']);
+                                                                 return $this->send($rs);
+
+                                                            } else {
+                                                                 return 'invalid argument';
+                                                            }
+                                                            break;
+
+                                                       default:
+                                                            return 'invalid argument: ' . $arg;
+                                                            break;
+                                                  }
+                                             }
                                              break;
+                                             // end switch users
 
                                         default:
                                              return 'invalid argument: ' . $this->verb;
                                              exit;
-                                   }
+                                   } // end switch verb
                               }
-                              // return $this->send($rs);
-
+                              break;
                          // end admin POST
 
                          default:

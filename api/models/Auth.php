@@ -398,7 +398,7 @@ class Auth extends API {
                               $db   = $DB->connect('scholarium');
                               $post = new Connect($db);
 
-                              $usercheck = $post->crud("SELECT username FROM user WHERE username='". $this->request['username']."'");
+                              $usercheck = $post->crud("SELECT username FROM user WHERE username='" . $this->request['username'] . "'");
                               $usercheck = $usercheck->fetch();
 
                               $mailcheck = $post->crud("SELECT email FROM user WHERE email='" . $this->request['email'] . "'");
@@ -424,8 +424,40 @@ class Auth extends API {
 
                                    $post->crud("INSERT IGNORE INTO profile (id,first_name,middle_name,last_name,last_modified) VALUES($last_id,'$first_name','$middle_name','$last_name',NOW())");
 
-                                   return $this->send(['success' => 'user account created']);
+                                   return $this->send([
+                                        'success' => 'user account created',
+                                        'hash' => $hash
+                                   ]);
                               }
+                              break;
+
+                         case 'verify':
+                              if (isset($this->request['hash'])) {
+                                   include_once 'config/DB.php';
+                                   include_once 'models/Connect.php';
+
+                                   $DB   = new DB();
+                                   $db   = $DB->connect('scholarium');
+                                   $post = new Connect($db);
+                                   $pass = sha1($this->request['hash']);
+
+                                   $qry = "UPDATE user SET status=1,password='" . $pass . "' WHERE hash='" . $this->request['hash'] . "'";
+                                   $post->crud($qry);
+
+                                   $user = $post->crud("SELECT username FROM user WHERE hash='" . $this->request['hash'] . "'");
+                                   $user = $user->fetch();
+
+                                   return $this->send([
+                                        'success' => 'user account verified',
+                                        'username' => $user['username'],
+                                        'password' => $pass
+                                   ]);
+
+                              } else {
+                                   return ['error' => 'missing argument'];
+                                   exit;
+                              }
+
                               break;
 
                          default:

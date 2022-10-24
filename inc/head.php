@@ -7,6 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo SCLR_FULL . $title; ?></title>
     <link rel="icon" type="image/x-icon" href="/assets/src/favicon.ico">
-    <link rel="stylesheet" href="<?php echo $root; ?>assets/css/styles.css">
+    <link rel="stylesheet" href="<?php echo $root; ?>assets/css/style.css">
     <?php if (isset($addcss) && $addcss != '') echo '<link rel="stylesheet" href="' . $root . 'assets/css/' . $addcss . '.css">'; ?>
 </head>
